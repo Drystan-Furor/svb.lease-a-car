@@ -144,7 +144,7 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 <a id="k09"></a>
 ### K09 · Formuleverschil expliciet laten besluiten
 
-**Status.** Voorstel; bevestiging door opdrachtgever nodig vóór implementatie van S06.
+**Status.** Bevestigd door opdrachtgever op 12 oktober 2026.
 
 **Keuze.** De letterlijk opgegeven formule is leidend. Het voorbeeldbedrag wordt niet met een correctiefactor nagebootst.
 
@@ -156,7 +156,7 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 
 **Waarom.** De opdracht noemt EUR 239,76, maar dat volgt niet uit de formule. Eén expliciete regel is te testen; twee tegenstrijdige uitkomsten niet.
 
-**Afweging.** Ook de eerste term is geen gebruikelijke lease-afschrijving. We ontwerpen geen eigen financieel model. De rekenstory blijft geblokkeerd op dit zakelijke besluit; de overige stories kunnen starten. Bevestigt de opdrachtgever het voorbeeldbedrag, dan moet eerst de formule worden aangepast en dezelfde testset opnieuw worden vastgesteld.
+**Afweging.** Ook de eerste term is geen gebruikelijke lease-afschrijving. We ontwerpen geen eigen financieel model. De rekenstory volgt de letterlijke formule. Een unit test bewijst zowel EUR 239,82 als dat EUR 239,76 daarvan afwijkt. Bevestigt de opdrachtgever later het voorbeeldbedrag, dan moet eerst de formule worden aangepast en dezelfde testset opnieuw worden vastgesteld.
 
 **Toets en teruglink.** [S01](backlog.html#S01), [S06](backlog.html#S06), [aandachtspunten](backlog.html#aandacht). Bron: [opdracht](assessment.md).
 
