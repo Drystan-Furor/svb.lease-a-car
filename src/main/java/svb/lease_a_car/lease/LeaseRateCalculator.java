@@ -19,6 +19,7 @@ public final class LeaseRateCalculator {
 
   /**
    * Calculates the monthly lease rate.
+   * Leaserate = ((( mileage / 12 ) * duration ) / Nett price) + ((( Interest rate / 100 ) * Nett price) / 12 )
    *
    * @param annualMileage kilometres driven per year; must be positive
    * @param durationMonths contract duration in months; must be positive
