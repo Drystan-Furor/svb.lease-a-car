@@ -303,7 +303,7 @@ Compose gebruikt de servicenaam voor interne HTTP-aanroepen. Poorten, demo-accou
 | --- | --- | --- |
 | Demo-login met JWT | Bevestigd door gebruiker | Uitwerken in S03. |
 | Docker voor bouwen, testen en starten | Verplicht op gebruikersverzoek | K20, S02 en S11; bewijs op tweede schone omgeving in S10. |
-| EUR 239,82 versus EUR 239,76 | Voorstel K09, nog te bevestigen | Opdrachtgever kiest formule vóór S06; geen groene acceptatie claimen. |
+| EUR 239,82 versus EUR 239,76 | K09 bevestigd op 12 oktober 2026 | Volg de letterlijke formule; S06 gebruikt EUR 239,82 als verwacht bedrag. |
 | CO₂ mag onbekend zijn, negatieve uitkomst volgt formule, rollenverdeling | Expliciete ontwerpvoorstellen K06/K08/K11 | In S01 beoordelen; aanpassen vóór betreffende story als opdrachtgever iets anders verwacht. |
 | WSJF-scores en omvang | Relatieve inschattingen | Na iedere story opnieuw beoordelen; geen uren toezeggen. |
 | Remote voor applicatieoplevering | Niet opgegeven | In S10 vastleggen. |
