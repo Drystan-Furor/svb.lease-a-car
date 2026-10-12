@@ -1,1 +1,16 @@
-services: {}
+services:
+  lease-api:
+    build:
+      context: .
+      target: lease-api
+    environment:
+      INTEREST_RATE_SERVICE_URL: http://interest-rate-service:8080
+    ports:
+      - "8080:8080"
+
+  interest-rate-service:
+    build:
+      context: .
+      target: interest-rate-service
+    ports:
+      - "8081:8080"

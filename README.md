@@ -13,8 +13,8 @@ Two independently buildable services exist:
 
 Both application contexts start successfully. The implemented business behavior is the
 monthly-rate calculation in `lease-api`; it has no HTTP endpoint yet. Authentication, CRUD
-resources, historical interest selection, service-to-service calls, runtime Docker images, and
-Compose startup are planned work, not current features.
+resources, historical interest selection, and service-to-service calls are planned work, not
+current features.
 
 ## Lease-rate calculation
 
@@ -64,10 +64,45 @@ For local development with a JDK:
 ./mvnw verify
 ```
 
+## Run with Docker Compose
+
+Build both images from source without a local JDK or Maven installation:
+
+```sh
+docker compose build --no-cache
+```
+
+Start both containers:
+
+```sh
+docker compose up --build -d
+docker compose ps
+```
+
+`lease-api` is available on host port `8080`; `interest-rate-service` is available on host port
+`8081`. Inside Compose, `lease-api` receives
+`INTEREST_RATE_SERVICE_URL=http://interest-rate-service:8080`. This uses the Compose service
+name and container port—not `localhost` or host port `8081`.
+
+Stop services and remove their temporary containers:
+
+```sh
+docker compose down
+```
+
+Runtime images use a pinned Java 21 JRE base image, contain only their verified application JAR,
+and run as a non-root user. The Docker build was tested on Docker Desktop using its default
+supported architecture; no platform is forced.
+
+Run the automated start/stop smoke check with:
+
+```sh
+sh tests/e2e/docker-smoke.sh
+```
+
 ## Run services locally
 
-Runtime Docker images and Compose are intentionally deferred to S11. Until then, start each
-service in its own terminal with a local JDK:
+To run without Docker, start each service in its own terminal with a local JDK:
 
 ```sh
 ./mvnw -pl lease-api spring-boot:run
@@ -78,8 +113,8 @@ service in its own terminal with a local JDK:
   -Dspring-boot.run.arguments="--server.port=8081"
 ```
 
-`lease-api` listens on port `8080`; `interest-rate-service` listens on port `8081` in this setup.
-Stop either service with `Ctrl+C`.
+`lease-api` listens on port `8080`; this local `interest-rate-service` command listens on port
+`8081`. Stop either service with `Ctrl+C`.
 
 Neither service exposes business REST endpoints in this revision. Starting them proves their
 independent application configuration only.
