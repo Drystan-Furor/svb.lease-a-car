@@ -2,7 +2,7 @@
 
 [Open de backlog](backlog.html) · [Opdracht](assessment.md) · [Analyse](analyze.md) · [Voertuigen](../data/testdata.csv) · [Rente](../data/testdata_interest.csv)
 
-Datum: 12 oktober 2026. Status: uitvoeringsplan, geen gerealiseerde API. De opdracht bepaalt wat verplicht is; de analyse is ontwerpadvies. Deze keuzes vullen ontbrekende details in voor de eenvoudigste uitvoerbare versie. Alleen de demo-login is expliciet met de gebruiker afgestemd. Overige ontwerpkeuzes zijn voorstellen; het rekenverschil bij K09 vraagt bevestiging vóór implementatie.
+Datum: 12 oktober 2026. Status: uitvoeringsplan, geen gerealiseerde API. De opdracht bepaalt wat verplicht is; de analyse is ontwerpadvies. Deze keuzes vullen ontbrekende details in voor de eenvoudigste uitvoerbare versie. Demo-login met JWT en bouwen in Docker zijn expliciet door de gebruiker gekozen. Overige ontwerpkeuzes zijn voorstellen; het rekenverschil bij K09 vraagt bevestiging vóór implementatie.
 
 ## Doel en grens
 
@@ -36,7 +36,7 @@ flowchart LR
   R --- I[(Rentetarieven in geheugen)]
 ```
 
-`lease-api` geeft demo-tokens uit en bezit klanten, voertuigen en berekening. `interest-rate-service` bezit uitsluitend rentetarieven. Beide services valideren identiteit. Eén repository, twee Maven-modules, twee processen en geen gedeelde datastore. Een gedeelde codebibliotheek is voor deze omvang niet nodig.
+`lease-api` geeft demo-tokens uit en bezit klanten, voertuigen en berekening. `interest-rate-service` bezit uitsluitend rentetarieven. Beide services valideren identiteit. Eén repository, twee Maven-modules, twee applicatiecontainers en geen gedeelde datastore. Een gedeelde codebibliotheek is voor deze omvang niet nodig.
 
 | Contract | Toegang | Gedrag |
 | --- | --- | --- |
@@ -54,7 +54,7 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 <a id="k01"></a>
 ### K01 · Eerst de verplichte API
 
-**Keuze.** Tien verplichte stories, gevolgd door drie losse bonusstories. Geen applicatiefrontend, contractbeheer, facturatie, refresh tokens of zoekplatform.
+**Keuze.** Elf verplichte stories, gevolgd door twee losse bonusstories. Docker is op gebruikersverzoek onderdeel van de basis: bouwen, testen en starten vanuit een schone checkout zonder lokaal geïnstalleerde Java of Maven. Geen applicatiefrontend, contractbeheer, facturatie, refresh tokens of zoekplatform.
 
 **Waarom.** De opdracht beoordeelt een eenvoudige API. Extra productfuncties kosten tijd zonder een ontbrekende eis af te dekken. Het HTML-document is een planningshulpmiddel, geen onderdeel van de API.
 
@@ -65,7 +65,7 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 <a id="k02"></a>
 ### K02 · Twee services, één repository
 
-**Keuze.** `lease-api` voor klanten, voertuigen, login en quotes; `interest-rate-service` voor rente. Maven-parent met twee modules en afzonderlijk startbare JARs.
+**Keuze.** `lease-api` voor klanten, voertuigen, login en quotes; `interest-rate-service` voor rente. Maven-parent met twee modules en afzonderlijk startbare JARs. S02 legt de Docker-buildstage vast; S11 voegt twee runtime-targets en Compose toe.
 
 **Waarom.** Dit is de kleinste duidelijke splitsing die echte service-to-servicecommunicatie toont en overeenkomt met de analyse.
 
@@ -80,9 +80,9 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 
 **Waarom.** Geen migratie nodig. De starter-BOM beheert compatibele versies. Dependency-resolutie en tests bewijzen in S02 dat de gekozen modules samen werken.
 
-**Afweging.** Verwijder bij implementatie ongebruikte Thymeleaf/HTMX, Lombok, H2/H2-console, authorization-server en bijbehorende testdependencies. Swagger en containers horen bij bonuswerk. Actuator, DevTools en Testcontainers zijn geen vereiste voor de basis. Voeg één CSV-parser, Apache Commons CSV, toe bij S09; quoted velden maken handmatig splitsen kwetsbaar. Deze documenten wijzigen het bestaande POM niet.
+**Afweging.** Verwijder bij implementatie ongebruikte Thymeleaf/HTMX, Lombok, H2/H2-console, authorization-server en bijbehorende testdependencies. Swagger hoort bij bonuswerk; Docker is verplicht via S02/S11 en keuze K20. Actuator, DevTools en Testcontainers zijn geen vereiste voor de basis. Voeg één CSV-parser, Apache Commons CSV, toe bij S09; quoted velden maken handmatig splitsen kwetsbaar. Deze documenten wijzigen het bestaande POM niet.
 
-**Toets en teruglink.** [S02](backlog.html#S02), [S09](backlog.html#S09): minimale build op JDK 21, beide services startbaar. Bron: [analyse](analyze.md) en bestaande projectbasis.
+**Toets en teruglink.** [S02](backlog.html#S02), [S09](backlog.html#S09): minimale build met JDK 21 in Docker, beide services startbaar. Bron: [analyse](analyze.md) en bestaande projectbasis.
 
 <a id="k04"></a>
 ### K04 · Opslag in geheugen
@@ -126,7 +126,7 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 
 **Waarom.** Eén leesaanroep per quote is voldoende. De synchrone Spring-client sluit aan op MVC en vermijdt extra frameworks.
 
-**Afweging.** Uitval van de renteservice verhindert quotes en geeft 503. Een geldige datum zonder historisch tarief geeft 422 bij de quote; de renteservice geeft daarvoor 404. Downstream weigering van een door lease-api geaccepteerd token of ongeldige downstream-response geeft 502. Foute credentials aan de voordeur blijven 401. Geen gokbedrag bij storingen. Poorten 8080 en 8081 zijn lokale defaults; basis-URL is configuratie, nooit requestinvoer.
+**Afweging.** Uitval van de renteservice verhindert quotes en geeft 503. Een geldige datum zonder historisch tarief geeft 422 bij de quote; de renteservice geeft daarvoor 404. Downstream weigering van een door lease-api geaccepteerd token of ongeldige downstream-response geeft 502. Foute credentials aan de voordeur blijven 401. Geen gokbedrag bij storingen. Hostpoorten 8080 en 8081 zijn defaults. In Compose gebruikt lease-api de servicenaam `interest-rate-service` en diens containerpoort, nooit localhost voor de andere container. De basis-URL is configuratie, nooit requestinvoer.
 
 **Toets en teruglink.** [S07](backlog.html#S07): HTTP-contracttests en een demo met twee echte processen. Bron: [analyse](analyze.md), [opdracht](assessment.md).
 
@@ -222,7 +222,7 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 
 **Waarom.** Zo worden geldregels, datumgrenzen en beveiliging controleerbaar zonder voor elke test een volledige infrastructuur te starten.
 
-**Afweging.** Geen willekeurig coveragepercentage of tests van triviale getters. Alle acceptatiecriteria hebben aantoonbaar bewijs. `rtk ./mvnw verify` wordt het enige vereiste verificatiecommando voor beide modules, inclusief integratietests en Google Java Style-controle. Javadoc beschrijft publieke contracten en niet-triviale reken-/datumregels. De build configureert die controles in S02; ze bestaan nog niet als bewezen groene suite.
+**Afweging.** Geen willekeurig coveragepercentage of tests van triviale getters. Alle acceptatiecriteria hebben aantoonbaar bewijs. `docker build --target verify .` wordt het verificatiecommando vanaf de host. In die Docker-stage draait `./mvnw -B verify` voor beide modules, inclusief integratietests en Google Java Style-controle. Een falende test stopt de imagebouw. De Maven Wrapper en gepinde Java 21-basisimage bepalen de toolchain; een lokale JDK, Maven of RTK is geen voorwaarde. Javadoc beschrijft publieke contracten en niet-triviale reken-/datumregels. De build configureert die controles in S02; ze bestaan nog niet als bewezen groene suite.
 
 **Toets en teruglink.** [S02](backlog.html#S02), [S06](backlog.html#S06), [S07](backlog.html#S07), [S10](backlog.html#S10). Bron: [opdracht](assessment.md) en gebruikersinstructies.
 
@@ -233,20 +233,20 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 
 **Waarom.** Maakt de afweging tussen snelle bewijsvoering en grotere werkzaamheden zichtbaar. Vroege formule- en beveiligingstests nemen de grootste onzekerheid weg.
 
-**Afweging.** 32 omvangpunten voor de tien verplichte stories en 13 voor bonussen zijn relatieve eenheden. Zonder deadline of teamsnelheid is een tijdsbelofte niet onderbouwd. Herprioriteer na iedere afgeronde story; wijzig geen omvang om een gewenste score te krijgen. Zolang K09 openstaat, sla S06 en daarna S07 over en pak gereed klant- of importwerk op.
+**Afweging.** 37 omvangpunten voor de elf verplichte stories en 10 voor bonussen zijn relatieve eenheden. Zonder deadline of teamsnelheid is een tijdsbelofte niet onderbouwd. Herprioriteer na iedere afgeronde story; wijzig geen omvang om een gewenste score te krijgen. Zolang K09 openstaat, sla S06 en daarna S07 over en pak gereed klant- of importwerk op.
 
 **Toets en teruglink.** [prioriteiten](backlog.html#prioriteiten), [route](backlog.html#route). Bron: gebruikersverzoek.
 
 <a id="k17"></a>
 ### K17 · Bewijsbare oplevering, bonussen apart
 
-**Keuze.** S10 levert README, start-/configuratie-instructies, voorbeeldrequests, voorbeelddata, testbewijs, beperkingen en een reproduceerbare demo. Uiteindelijk alle benodigde applicatiecode en assets pushen naar een persoonlijke Git-repository. B01 Swagger, B02 containerisatie en B03 duurzame opslag zijn optioneel en afzonderlijk te kiezen.
+**Keuze.** S10 levert README, Docker-/Compose-instructies, voorbeeldrequests, voorbeelddata, testbewijs, beperkingen en een reproduceerbare demo op een tweede schone Dockeromgeving. Uiteindelijk alle benodigde applicatiecode en assets pushen naar een persoonlijke Git-repository. B01 Swagger en B03 duurzame opslag zijn optioneel en afzonderlijk te kiezen. Voormalige bonus B02 is nu verplichte story S11: bouwen en draaien in Docker. Het oude B02-anker verwijst naar S11.
 
 **Waarom.** De beoordelaar moet kunnen starten, inloggen, beheren en rekenen zonder mondelinge uitleg. De opdracht noemt publicatie in een Git-achtige repository als deliverable.
 
-**Afweging.** Geen remote of deadline opgegeven; S10 laat remote kiezen en controleert toegang bij oplevering. Deze documentatietaak pusht niet. Swagger mag de basis niet blokkeren; een databasebonus moet restartbestendigheid bewijzen, een standaard H2-geheugendatabase doet dat niet. Voor die bonus volstaat H2 in file-mode per service met bestaande repositorygedragstests.
+**Afweging.** Geen remote of deadline opgegeven; S10 laat remote kiezen en controleert toegang bij oplevering. Deze documentatietaak pusht niet. Swagger mag de basis niet blokkeren; een databasebonus moet restartbestendigheid bewijzen, een standaard H2-geheugendatabase doet dat niet. Voor die bonus volstaat H2 in file-mode per service met bestaande repositorygedragstests en een eigen Docker named volume, zodat data ook containervervanging overleeft.
 
-**Toets en teruglink.** [S10](backlog.html#S10), [B01](backlog.html#B01), [B02](backlog.html#B02), [B03](backlog.html#B03). Bron: [opdracht](assessment.md).
+**Toets en teruglink.** [S10](backlog.html#S10), [S11](backlog.html#S11), [B01](backlog.html#B01), [B03](backlog.html#B03). Bron: [opdracht](assessment.md) en gebruikersverzoek om Docker.
 
 <a id="k18"></a>
 ### K18 · Eén responsive HTML-document
@@ -270,11 +270,39 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 
 **Toets en teruglink.** [S02](backlog.html#S02), [S10](backlog.html#S10). Bron: gebruikersinstructies en gecontroleerde Git-beginstatus.
 
+<a id="k20"></a>
+### K20 · Bouwen, testen en draaien in Docker
+
+**Status.** Verplicht op gebruikersverzoek van 12 oktober 2026. Docker stond in de oorspronkelijke assessment als bonus; de aanvullende gebruikerseis maakt het onderdeel van de basis.
+
+**Keuze.** Eén multi-stage Dockerfile in de repositoryroot. De stage `verify` bouwt beide Maven-modules vanuit broncode met de meegeleverde Wrapper en voert `./mvnw -B verify` uit. Twee kleine runtime-targets, `lease-api` en `interest-rate-service`, kopiëren uitsluitend de geverifieerde JARs naar een Java 21 JRE-image en draaien als niet-rootgebruiker. Compose bouwt één image per service en start beide op een gedeeld netwerk.
+
+**Waarom.** Dezelfde vastgelegde toolchain bouwt en test op iedere ondersteunde Dockeromgeving. De beoordelaar heeft Docker met Compose v2 nodig; een lokale JDK, Maven, voorgebouwde JAR of IDE-instelling is niet nodig. Eén Dockerfile voorkomt twee verschillende buildrecepten.
+
+**Uitvoering.** S02 begint met de Maven-structuur en stage `verify`. S11 voegt de runtime-targets, `.dockerignore` en Compose-configuratie toe. De hostcommando's zijn:
+
+```text
+docker build --target verify .
+docker compose build --no-cache
+docker compose up --build -d
+docker compose logs
+docker compose down
+```
+
+`verify` is de standaard test-/stijlcontrole. Een schone opleverproef gebruikt `build --no-cache`, gevolgd door `up -d` en de demo-/foutscenario's. Beide images komen uit broncode in de checkout; kopiëren uit een lokaal `target/` voldoet niet. `.dockerignore` sluit onder meer `target/`, `.git/`, IDE-bestanden en lokale secrets uit, maar behoudt Wrapperbestanden, POMs, broncode en CSV-resources. Geen absolute hostpaden of vereiste bind mounts naar lokale JARs of bronbestanden.
+
+**Afweging.** Pin JDK-/JRE-basisimages op een expliciete versie en multi-architectuurmanifestdigest; leg ook de Wrapperversie vast. De gekozen basisimages ondersteunen de gebruikte Linux-architectuur. Bouw voor de architectuur van de Dockerhost; forceer niet ongemerkt één CPU-platform. Downloads bij de eerste build vragen netwerktoegang. Gepinde toolchains verminderen verschillen, maar garanderen zonder extra maatregelen geen byte-identieke JARs; dat is hier geen eis. Kubernetes, een registry en deploymentautomatisering zijn niet nodig voor deze lokale assessmentdemo.
+
+Compose gebruikt de servicenaam voor interne HTTP-aanroepen. Poorten, demo-accounts en JWT-secret zijn runtimeconfiguratie; werkende secrets komen niet in images of Git. Data in geheugen blijft tijdelijk: Docker verandert K04 niet. Alleen de aparte opslagbonus krijgt named volumes. Start-/stopcommando's, configuratievoorbeeld en werkelijk geteste host-/CPU-combinaties komen in README.
+
+**Toets en teruglink.** [S02](backlog.html#S02): de containerbuild slaagt zonder host-JDK en faalt bij een falende test. [S11](backlog.html#S11): twee images uit schone broncode, beide containers startbaar. [S10](backlog.html#S10): login, beheer en quote werken vanaf dezelfde Git-commit in een tweede schone Dockeromgeving, bijvoorbeeld een Linux-runner of een andere computer. Noteer omgeving, commit en testresultaat; zonder die proef is overdraagbaarheid nog niet bewezen. Bron: expliciet gebruikersverzoek om buiten de eigen machine te kunnen bouwen en draaien.
+
 ## Open besluit en aannames
 
 | Onderwerp | Status | Actie |
 | --- | --- | --- |
 | Demo-login met JWT | Bevestigd door gebruiker | Uitwerken in S03. |
+| Docker voor bouwen, testen en starten | Verplicht op gebruikersverzoek | K20, S02 en S11; bewijs op tweede schone omgeving in S10. |
 | EUR 239,82 versus EUR 239,76 | Voorstel K09, nog te bevestigen | Opdrachtgever kiest formule vóór S06; geen groene acceptatie claimen. |
 | CO₂ mag onbekend zijn, negatieve uitkomst volgt formule, rollenverdeling | Expliciete ontwerpvoorstellen K06/K08/K11 | In S01 beoordelen; aanpassen vóór betreffende story als opdrachtgever iets anders verwacht. |
 | WSJF-scores en omvang | Relatieve inschattingen | Na iedere story opnieuw beoordelen; geen uren toezeggen. |
