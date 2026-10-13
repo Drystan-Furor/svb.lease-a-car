@@ -358,10 +358,10 @@ the delivery; artifact retention follows repository settings. Record actual resu
 | Evidence | Status |
 | --- | --- |
 | Local Docker demo | 2026-10-13: Darwin arm64, Docker Desktop 4.94.0, Engine 29.8.2 linux/arm64, Compose 5.5.1; 50 tests, zero style violations, CRUD/quote/401/403/503/reset passed |
-| Delivery commit | Pending commit and remote publication |
+| Locally verified commit | `9e831998d352d0887e79d181d8378e0b263e9ae9`, clean worktree; [recorded output](tests/evidence/s10-local.log). Later evidence-only changes do not change runtime or tests. Remote publication pending |
 | Second-host OS/CPU and Docker/Compose versions | Pending workflow evidence |
 | Second-host build/tests/style and CRUD/quote/401/403/503/reset | Not yet demonstrated |
-| Assessor clone/access | Not yet confirmed; maintainer access alone is insufficient |
+| Assessor clone/access | Remote is private; maintainer has ADMIN access. Assessor access not yet confirmed |
 
 ### Known limits
 

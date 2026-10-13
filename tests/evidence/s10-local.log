@@ -1,0 +1,112 @@
+S10 local verification, 2026-10-13
+Command: sh tests/e2e/docker-smoke.sh
+Exit status: 0
+Docker Desktop: 4.94.0
+Selected build and assertion output; dependency download output omitted.
+
+Commit: 9e831998d352d0887e79d181d8378e0b263e9ae9
+Working tree: Darwin arm64
+Client 29.8.2; server 29.8.2 linux/arm64
+Docker Compose version v5.5.1
+#18 10.21 [INFO] You have 0 Checkstyle violations.
+#18 20.76 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.011 s -- in svb.leaseacar.lease.DevProfileAuthenticationMvcTests
+#18 21.37 [INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.626 s -- in svb.leaseacar.lease.AuthenticationMvcTests
+#18 21.38 [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in svb.leaseacar.lease.LeaseRateCalculatorTest
+#18 21.69 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.267 s -- in svb.leaseacar.lease.LeaseApiApplicationTests
+#18 22.02 [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.363 s -- in svb.leaseacar.lease.VehicleControllerMvcTests
+#18 22.52 [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.503 s -- in svb.leaseacar.lease.CustomerControllerMvcTests
+#18 25.82 [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.299 s -- in svb.leaseacar.lease.LeaseQuoteControllerMvcTests
+#18 25.89 [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.066 s -- in svb.leaseacar.lease.SecurityPropertiesTests
+#18 25.92 [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in svb.leaseacar.vehicle.VehicleCsvImporterTests
+#18 25.97 [INFO] Tests run: 35, Failures: 0, Errors: 0, Skipped: 0
+#18 28.49 [INFO] You have 0 Checkstyle violations.
+#18 29.08 [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.052 s -- in svb.leaseacar.interest.rate.InterestRateRepositoryTests
+#18 29.10 [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in svb.leaseacar.interest.rate.InterestRateCsvImporterTests
+#18 30.27 [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.165 s -- in svb.leaseacar.interest.AuthenticationMvcTests
+#18 30.84 [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.565 s -- in svb.leaseacar.interest.InterestRateControllerMvcTests
+#18 30.84 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in svb.leaseacar.interest.security.SecurityPropertiesTests
+#18 30.90 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in svb.leaseacar.interest.InterestRateServiceApplicationTests
+#18 30.93 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+#18 31.11 [INFO] You have 0 Checkstyle violations.
+#18 31.11 [INFO] BUILD SUCCESS
+PASS GET :8080/ -> 401
+PASS GET :8081/ -> 401
+PASS POST :8080/auth/login -> 200
+PASS POST :8080/auth/login -> 200
+PASS POST :8080/auth/login -> 401
+PASS GET :8080/customers -> 200
+PASS GET :8080/vehicles -> 200
+PASS GET :8081/interest-rates -> 200
+PASS POST :8080/customers -> 201
+PASS GET :8080/customers/0f104ede-9562-40d5-b5e1-a90f92e00a30 -> 200
+PASS PUT :8080/customers/0f104ede-9562-40d5-b5e1-a90f92e00a30 -> 200
+PASS GET :8080/customers/0f104ede-9562-40d5-b5e1-a90f92e00a30 -> 200
+PASS GET :8080/customers?page=0&size=1 -> 200
+PASS GET :8080/customers/0f104ede-9562-40d5-b5e1-a90f92e00a30 -> 403
+PASS POST :8080/vehicles -> 201
+PASS GET :8080/vehicles/0daab2a9-9292-4d3e-8795-9725ba383a19 -> 200
+PASS PUT :8080/vehicles/0daab2a9-9292-4d3e-8795-9725ba383a19 -> 200
+PASS GET :8080/vehicles/0daab2a9-9292-4d3e-8795-9725ba383a19 -> 200
+PASS GET :8080/vehicles?page=0&size=1 -> 200
+PASS POST :8080/vehicles -> 403
+PASS POST :8081/interest-rates -> 201
+PASS GET :8081/interest-rates/ad270084-081d-4c56-a50e-a634a11e8575 -> 200
+PASS PUT :8081/interest-rates/ad270084-081d-4c56-a50e-a634a11e8575 -> 200
+PASS GET :8081/interest-rates/ad270084-081d-4c56-a50e-a634a11e8575 -> 200
+PASS GET :8081/interest-rates?page=0&size=1 -> 200
+PASS DELETE :8081/interest-rates/ad270084-081d-4c56-a50e-a634a11e8575 -> 403
+PASS GET :8081/interest-rates/effective?date=2030-01-01 -> 200
+PASS POST :8080/lease-quotes -> 200
+PASS POST :8080/lease-quotes -> 403
+PASS POST :8080/lease-quotes -> 503
+PASS GET :8081/ -> 401
+PASS GET :8081/interest-rates/ad270084-081d-4c56-a50e-a634a11e8575 -> 404
+PASS POST :8081/interest-rates -> 201
+PASS DELETE :8080/customers/0f104ede-9562-40d5-b5e1-a90f92e00a30 -> 204
+PASS GET :8080/customers/0f104ede-9562-40d5-b5e1-a90f92e00a30 -> 404
+PASS DELETE :8080/vehicles/0daab2a9-9292-4d3e-8795-9725ba383a19 -> 204
+PASS GET :8080/vehicles/0daab2a9-9292-4d3e-8795-9725ba383a19 -> 404
+PASS DELETE :8081/interest-rates/a5ee6cfe-44aa-4dcd-94bb-f040b430168b -> 204
+PASS GET :8081/interest-rates/a5ee6cfe-44aa-4dcd-94bb-f040b430168b -> 404
+PASS: fixtures, login, CRUD, EUR 239.82 quote, 401, 403, 503 and reset
+PASS GET :8080/ -> 401
+PASS GET :8081/ -> 401
+PASS POST :8080/auth/login -> 200
+PASS POST :8080/auth/login -> 200
+PASS POST :8080/auth/login -> 401
+PASS GET :8080/customers -> 200
+PASS GET :8080/vehicles -> 200
+PASS GET :8081/interest-rates -> 200
+PASS POST :8080/customers -> 201
+PASS GET :8080/customers/82a09e63-3ec6-4b44-8a5b-8ea4a6467668 -> 200
+PASS PUT :8080/customers/82a09e63-3ec6-4b44-8a5b-8ea4a6467668 -> 200
+PASS GET :8080/customers/82a09e63-3ec6-4b44-8a5b-8ea4a6467668 -> 200
+PASS GET :8080/customers?page=0&size=1 -> 200
+PASS GET :8080/customers/82a09e63-3ec6-4b44-8a5b-8ea4a6467668 -> 403
+PASS POST :8080/vehicles -> 201
+PASS GET :8080/vehicles/8e1ad52c-eb87-498e-8c0f-68aebe3d531e -> 200
+PASS PUT :8080/vehicles/8e1ad52c-eb87-498e-8c0f-68aebe3d531e -> 200
+PASS GET :8080/vehicles/8e1ad52c-eb87-498e-8c0f-68aebe3d531e -> 200
+PASS GET :8080/vehicles?page=0&size=1 -> 200
+PASS POST :8080/vehicles -> 403
+PASS POST :8081/interest-rates -> 201
+PASS GET :8081/interest-rates/9c8bb016-ebab-41ea-9932-8b231d501bfe -> 200
+PASS PUT :8081/interest-rates/9c8bb016-ebab-41ea-9932-8b231d501bfe -> 200
+PASS GET :8081/interest-rates/9c8bb016-ebab-41ea-9932-8b231d501bfe -> 200
+PASS GET :8081/interest-rates?page=0&size=1 -> 200
+PASS DELETE :8081/interest-rates/9c8bb016-ebab-41ea-9932-8b231d501bfe -> 403
+PASS GET :8081/interest-rates/effective?date=2030-01-01 -> 200
+PASS POST :8080/lease-quotes -> 200
+PASS POST :8080/lease-quotes -> 403
+PASS POST :8080/lease-quotes -> 503
+PASS GET :8081/ -> 401
+PASS GET :8081/interest-rates/9c8bb016-ebab-41ea-9932-8b231d501bfe -> 404
+PASS POST :8081/interest-rates -> 201
+PASS DELETE :8080/customers/82a09e63-3ec6-4b44-8a5b-8ea4a6467668 -> 204
+PASS GET :8080/customers/82a09e63-3ec6-4b44-8a5b-8ea4a6467668 -> 404
+PASS DELETE :8080/vehicles/8e1ad52c-eb87-498e-8c0f-68aebe3d531e -> 204
+PASS GET :8080/vehicles/8e1ad52c-eb87-498e-8c0f-68aebe3d531e -> 404
+PASS DELETE :8081/interest-rates/baef7c75-b040-49ad-9d92-e04695a497c3 -> 204
+PASS GET :8081/interest-rates/baef7c75-b040-49ad-9d92-e04695a497c3 -> 404
+PASS: fixtures, login, CRUD, EUR 239.82 quote, 401, 403, 503 and reset
+PASS: complete assessment demo, including container recreation
