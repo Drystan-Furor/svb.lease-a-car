@@ -38,7 +38,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.bind.annotation.PostMapping;
+import svb.leaseacar.LeaseApiApplication;
 
 @SpringBootTest(
     properties = {
