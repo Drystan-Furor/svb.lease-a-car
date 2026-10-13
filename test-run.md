@@ -543,7 +543,7 @@ gh run download "$ASSESSMENT_RUN_ID" --dir /tmp/lease-assessment-evidence
 Verwacht een geslaagde run met artifact `assessment-evidence-<commit>`.
 Controleer de commit in het log, Docker/Compose-versies, host/CPU, 50 geslaagde tests,
 nul stijlmeldingen en de volledige functionele demo. De workflow gebruikt geen host-Java/Maven.
-Zie [README](README.md#assessment-handover-and-evidence) voor het vastgelegde S10-bewijs.
+Zie [opleverbewijs](assesment/docs/evidence.md) voor het vastgelegde S10-bewijs.
 
 De oorspronkelijke eisen staan in [assessment.md](assesment/docs/assessment.md).
 Swagger en blijvende opslag zijn bonusonderdelen en maken geen deel uit van deze testworkflow.
