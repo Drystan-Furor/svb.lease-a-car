@@ -7,12 +7,13 @@ from interest-rate management. Both services validate the caller's identity on e
 
 Two independently buildable services exist:
 
-- `lease-api` owns login and lease calculations, and will own customers, vehicles, and quotes.
+- `lease-api` owns login, vehicle management, and lease calculations, and will own customers and
+  quotes.
 - `interest-rate-service` will own dated interest rates.
 
-Implemented behavior is stateless JWT login plus the monthly-rate calculation in `lease-api`.
-The calculator has no HTTP endpoint yet. CRUD resources, historical interest selection, and
-service-to-service calls are planned work, not current features.
+Implemented behavior is stateless JWT login, in-memory vehicle CRUD, and the monthly-rate
+calculation in `lease-api`. The calculator has no HTTP endpoint yet. Customer CRUD, historical
+interest selection, quotes, and service-to-service calls are planned work, not current features.
 
 ## Authentication API
 
@@ -53,6 +54,41 @@ server-side login session is created.
 
 Only login is anonymous. These demo credentials suit local assessment use, not production
 identity management. Use HTTPS before exposing either API outside a trusted local environment.
+
+## Vehicle API
+
+Vehicle routes require a bearer token. `BROKER` and `EMPLOYEE` may read; only `EMPLOYEE` may
+create, fully replace, or delete vehicles.
+
+| Method | Route | Result |
+| --- | --- | --- |
+| `POST` | `/vehicles` | `201` with vehicle body and `Location` header |
+| `GET` | `/vehicles/{id}` | `200`, or `404` for an unknown UUID |
+| `GET` | `/vehicles?page=0&size=50` | Bounded page with `items`, `page`, `size`, and `total` |
+| `PUT` | `/vehicles/{id}` | Full replacement with `200`, or `404` |
+| `DELETE` | `/vehicles/{id}` | `204`, or `404` |
+
+Create or replace request:
+
+```json
+{
+  "make": "Volvo",
+  "model": "XC40",
+  "version": "Recharge",
+  "numberOfDoors": 5,
+  "co2Emission": null,
+  "grossPrice": 52000.00,
+  "nettPrice": 43000.00
+}
+```
+
+`make`, `model`, and `version` must not be blank. Doors and both prices must be positive. CO₂ is
+optional; when supplied it is measured in g/km and cannot be negative. Invalid input returns
+`400` as ProblemDetail. List defaults are page `0`, size `50`; maximum size is `100`. Results are
+sorted by UUID. Identical versions remain separate records with separate UUIDs.
+
+Vehicles are held in memory. Every application or container restart clears manually entered
+vehicles; CSV demo-data import belongs to a later story.
 
 ## Lease-rate calculation
 
@@ -193,13 +229,12 @@ its own terminal with a local JDK; both terminals must inherit the same `JWT_SEC
 `8081`. Stop either service with `Ctrl+C`. Missing or invalid security configuration stops
 startup instead of falling back to a default credential.
 
-No business REST resource is exposed in this revision. `POST /auth/login` is available; valid
-bearer tokens already protect the planned route families in both services.
+`POST /auth/login` and vehicle CRUD are available. Other business resources remain planned.
 
 ## Project layout
 
 ```text
-lease-api/                 Lease API module and calculator
+lease-api/                 Login, vehicle management, and lease calculator
 interest-rate-service/     Interest-rate service module
 Dockerfile                 Java 21 verification build stage
 assesment/docs/            Assessment, implementation plan, decisions

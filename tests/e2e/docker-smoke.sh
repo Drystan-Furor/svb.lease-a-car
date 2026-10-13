@@ -59,6 +59,48 @@ assert_services_ready() {
   )"
   test -n "$access_token"
 
+  employee_login_response="$(
+    curl --silent --show-error \
+      --header 'Content-Type: application/json' \
+      --data "{\"username\":\"employee\",\"password\":\"${EMPLOYEE_PASSWORD}\"}" \
+      http://localhost:8080/auth/login
+  )"
+  employee_token="$(
+    printf '%s\n' "$employee_login_response" \
+      | sed -n 's/.*"accessToken":"\([^"]*\)".*/\1/p'
+  )"
+  test -n "$employee_token"
+
+  vehicle_response="$(
+    curl --fail --silent --show-error \
+      --header "Authorization: Bearer ${employee_token}" \
+      --header 'Content-Type: application/json' \
+      --data '{"make":"Volvo","model":"XC40","version":"Recharge","numberOfDoors":5,"co2Emission":null,"grossPrice":52000,"nettPrice":43000}' \
+      http://localhost:8080/vehicles
+  )"
+  vehicle_id="$(
+    printf '%s\n' "$vehicle_response" \
+      | sed -n 's/.*"id":"\([^"]*\)".*/\1/p'
+  )"
+  test -n "$vehicle_id"
+  test "$(
+    curl --silent --output /dev/null --write-out '%{http_code}' \
+      --header "Authorization: Bearer ${access_token}" \
+      "http://localhost:8080/vehicles/${vehicle_id}"
+  )" = "200"
+  test "$(
+    curl --silent --output /dev/null --write-out '%{http_code}' \
+      --request DELETE \
+      --header "Authorization: Bearer ${access_token}" \
+      "http://localhost:8080/vehicles/${vehicle_id}"
+  )" = "403"
+  test "$(
+    curl --silent --output /dev/null --write-out '%{http_code}' \
+      --request DELETE \
+      --header "Authorization: Bearer ${employee_token}" \
+      "http://localhost:8080/vehicles/${vehicle_id}"
+  )" = "204"
+
   test "$(
     curl --silent --output /dev/null --write-out '%{http_code}' \
       --header "Authorization: Bearer ${access_token}" \

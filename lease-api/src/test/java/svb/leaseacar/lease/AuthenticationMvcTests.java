@@ -1,6 +1,7 @@
 package svb.leaseacar.lease;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -190,8 +191,33 @@ class AuthenticationMvcTests {
         .andExpect(status().isOk());
     mockMvc.perform(post("/vehicles").header("Authorization", bearer(broker)))
         .andExpect(status().isForbidden());
-    mockMvc.perform(post("/vehicles").header("Authorization", bearer(employee)))
+    MvcResult created =
+        mockMvc
+            .perform(
+                post("/vehicles")
+                    .header("Authorization", bearer(employee))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        """
+                        {
+                          "make": "Volvo",
+                          "model": "XC40",
+                          "version": "Recharge",
+                          "numberOfDoors": 5,
+                          "co2Emission": null,
+                          "grossPrice": 52000,
+                          "nettPrice": 43000
+                        }
+                        """))
+            .andExpect(status().isCreated())
+            .andReturn();
+    String location = created.getResponse().getHeader("Location");
+    mockMvc.perform(get(location).header("Authorization", bearer(broker)))
         .andExpect(status().isOk());
+    mockMvc.perform(delete(location).header("Authorization", bearer(broker)))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(delete(location).header("Authorization", bearer(employee)))
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -272,13 +298,8 @@ class AuthenticationMvcTests {
 
   @RestController
   static class TestRoutes {
-    @GetMapping({"/customers", "/lease-quotes", "/vehicles"})
+    @GetMapping({"/customers", "/lease-quotes"})
     String read() {
-      return "reached";
-    }
-
-    @PostMapping("/vehicles")
-    String writeVehicle() {
       return "reached";
     }
   }
