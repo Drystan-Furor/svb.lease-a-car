@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lease-a-car API-testdashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: "#eef6ff", 600: "#075eaa", 700: "#064d8b", 900: "#082f49" }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body id="top" class="min-h-screen bg-slate-100 text-slate-900">
+  <header class="border-b border-slate-200 bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">SVB assessment</p>
+          <h1 class="mt-2 text-3xl font-bold tracking-tight">Lease-a-car API-testdashboard</h1>
+          <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+            Voer de acht stappen uit het handmatige testplan in volgorde uit. Iedere groep toont
+            HTTP-status, response en fouten in een eigen terminal.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+             href="https://github.com/Drystan-Furor/svb.lease-a-car/blob/master/assesment/docs/test-run.md"
+             target="_blank" rel="noreferrer">Open test-run.md</a>
+          <button id="run-all" class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+            Voer stappen 1–8 uit
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <section aria-labelledby="settings-title" class="mb-8 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="border-b border-slate-200 pb-4">
+        <h2 id="settings-title" class="text-lg font-semibold">Testinstellingen</h2>
+        <p class="mt-1 text-sm text-slate-600">Standaardwaarden passen bij het lokale dev-profiel en de README-opzet.</p>
+      </div>
+      <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <label class="block text-sm font-medium text-slate-700">Broker-gebruiker
+          <input id="broker-username" value="broker" class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-50">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">Broker-wachtwoord
+          <input id="broker-password" type="password" value="broker-password" class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-50">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">Employee-gebruiker
+          <input id="employee-username" value="employee" class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-50">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">Employee-wachtwoord
+          <input id="employee-password" type="password" value="employee-password" class="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-50">
+        </label>
+      </div>
+      <div id="state-summary" class="mt-5 rounded-md bg-slate-50 px-4 py-3 font-mono text-xs text-slate-600">Nog niet ingelogd.</div>
+    </section>
+
+    <div class="grid gap-6">
+      <section id="step-1" class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 1</p><h2 class="mt-1 text-xl font-semibold">Inloggen</h2><p class="mt-2 text-sm text-slate-600">Logt BROKER en EMPLOYEE in en bewaart beide tokens voor volgende groepen.</p><button data-step="1" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 1 uit</button></div>
+        <pre id="output-1" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
+        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      </section>
+      <section id="step-2" class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 2</p><h2 class="mt-1 text-xl font-semibold">Klanten</h2><p class="mt-2 text-sm text-slate-600">Test lijst, toevoegen, ophalen en volledig wijzigen als BROKER.</p><button data-step="2" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 2 uit</button></div>
+        <pre id="output-2" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
+        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      </section>
+      <section id="step-3" class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 3</p><h2 class="mt-1 text-xl font-semibold">Voertuigen</h2><p class="mt-2 text-sm text-slate-600">Test lijst, toevoegen, ophalen met beide rollen en wijzigen als EMPLOYEE.</p><button data-step="3" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 3 uit</button></div>
+        <pre id="output-3" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
+        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      </section>
+      <section id="step-4" class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 4</p><h2 class="mt-1 text-xl font-semibold">Rente</h2><p class="mt-2 text-sm text-slate-600">Test lijst, CRUD-leesacties, wijzigen en effectieve rente op twee datums.</p><button data-step="4" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 4 uit</button></div>
+        <pre id="output-4" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
+        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      </section>
+      <section id="step-5" class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 5</p><h2 class="mt-1 text-xl font-semibold">Leasequote</h2><p class="mt-2 text-sm text-slate-600">Laat Lease API voertuig en rente combineren tot het verwachte maandbedrag.</p><button data-step="5" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 5 uit</button></div>
+        <pre id="output-5" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
+        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      </section>
+      <section id="step-6" class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 6</p><h2 class="mt-1 text-xl font-semibold">Toegangscontrole</h2><p class="mt-2 text-sm text-slate-600">Controleert 401 bij ontbrekende of ongeldige login en 403 bij verkeerde rol.</p><button data-step="6" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 6 uit</button></div>
+        <pre id="output-6" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
+        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      </section>
+      <section id="step-7" class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 7</p><h2 class="mt-1 text-xl font-semibold">Validatie en fouten</h2><p class="mt-2 text-sm text-slate-600">Controleert 400, 404, 409 en 422 voor ongeldige of conflicterende invoer.</p><button data-step="7" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 7 uit</button></div>
+        <pre id="output-7" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
+        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      </section>
+      <section id="step-8" class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 8</p><h2 class="mt-1 text-xl font-semibold">Testrecords verwijderen</h2><p class="mt-2 text-sm text-slate-600">Verwijdert eigen klant, voertuig en rente en controleert daarna de 404-responses.</p><button data-step="8" class="run-step mt-5 rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-800">Voer stap 8 uit</button></div>
+        <pre id="output-8" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
+        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const LEASE_API = "/lease-api";
+    const INTEREST_API = "/interest-api";
+    const state = {
+      brokerToken: null,
+      employeeToken: null,
+      customerId: null,
+      vehicleId: null,
+      rateId: null,
+      rateDate: null
+    };
+
+    const value = id => document.getElementById(id).value;
+    const output = step => document.getElementById(`output-${step}`);
+    const auth = token => token ? { Authorization: `Bearer ${token}` } : {};
+
+    function updateState() {
+      const ready = name => state[name] ? "gereed" : "ontbreekt";
+      document.getElementById("state-summary").textContent =
+        `BROKER-token: ${ready("brokerToken")} | EMPLOYEE-token: ${ready("employeeToken")} | ` +
+        `klant: ${state.customerId || "-"} | voertuig: ${state.vehicleId || "-"} | ` +
+        `rente: ${state.rateId || "-"}${state.rateDate ? ` (${state.rateDate})` : ""}`;
+    }
+
+    function requireState(...names) {
+      const missing = names.filter(name => !state[name]);
+      if (missing.length) throw new Error(`Voer eerdere stappen uit. Ontbreekt: ${missing.join(", ")}`);
+    }
+
+    function append(step, text) {
+      output(step).textContent += text + "\n";
+      output(step).scrollTop = output(step).scrollHeight;
+    }
+
+    async function request(step, base, path, options = {}) {
+      const method = options.method || "GET";
+      const headers = { ...auth(options.token), ...(options.headers || {}) };
+      let body;
+      if (options.rawBody !== undefined) {
+        body = options.rawBody;
+        headers["Content-Type"] = "application/json";
+      } else if (options.body !== undefined) {
+        body = JSON.stringify(options.body);
+        headers["Content-Type"] = "application/json";
+      }
+
+      append(step, `\n$ ${method} ${path}`);
+      const response = await fetch(base + path, { method, headers, body });
+      const contentType = response.headers.get("content-type") || "";
+      const text = await response.text();
+      let parsed = text;
+      if (text && (contentType.includes("application/json") || contentType.includes("application/problem+json"))) {
+        try { parsed = JSON.parse(text); } catch (_) { parsed = text; }
+      }
+      append(step, `HTTP ${response.status} ${response.statusText}`);
+      if (text) append(step, typeof parsed === "string" ? parsed : JSON.stringify(parsed, null, 2));
+
+      const expected = Array.isArray(options.expected) ? options.expected : [options.expected ?? 200];
+      if (!expected.includes(response.status)) {
+        throw new Error(`${method} ${path}: verwacht ${expected.join("/")}, kreeg ${response.status}`);
+      }
+      return { status: response.status, body: parsed };
+    }
+
+    const customer = name => ({
+      name, street: "Teststraat", houseNumber: "1", zipcode: "1234 AB",
+      place: "Utrecht", email: `test-${Date.now()}@example.test`, phoneNumber: "0612345678"
+    });
+    const vehicle = version => ({
+      make: "Volvo", model: "XC40", version, numberOfDoors: 5,
+      co2Emission: version === "Test" ? null : 0, grossPrice: 70000, nettPrice: 63000
+    });
+    const quote = startDate => ({
+      vehicleId: state.vehicleId, mileage: 45000, duration: 60, startDate
+    });
+
+    const steps = {
+      async 1(step) {
+        const broker = await request(step, LEASE_API, "/auth/login", {
+          method: "POST", body: { username: value("broker-username"), password: value("broker-password") }
+        });
+        state.brokerToken = broker.body.accessToken;
+        const employee = await request(step, LEASE_API, "/auth/login", {
+          method: "POST", body: { username: value("employee-username"), password: value("employee-password") }
+        });
+        state.employeeToken = employee.body.accessToken;
+      },
+      async 2(step) {
+        requireState("brokerToken");
+        await request(step, LEASE_API, "/customers?page=0&size=5", { token: state.brokerToken });
+        const created = await request(step, LEASE_API, "/customers", {
+          method: "POST", token: state.brokerToken, body: customer("Testklant"), expected: 201
+        });
+        state.customerId = created.body.id;
+        await request(step, LEASE_API, `/customers/${state.customerId}`, { token: state.brokerToken });
+        const changed = customer("Gewijzigde testklant");
+        changed.houseNumber = "2";
+        await request(step, LEASE_API, `/customers/${state.customerId}`, {
+          method: "PUT", token: state.brokerToken, body: changed
+        });
+      },
+      async 3(step) {
+        requireState("brokerToken", "employeeToken");
+        await request(step, LEASE_API, "/vehicles?page=0&size=5", { token: state.brokerToken });
+        const created = await request(step, LEASE_API, "/vehicles", {
+          method: "POST", token: state.employeeToken, body: vehicle("Test"), expected: 201
+        });
+        state.vehicleId = created.body.id;
+        await request(step, LEASE_API, `/vehicles/${state.vehicleId}`, { token: state.brokerToken });
+        await request(step, LEASE_API, `/vehicles/${state.vehicleId}`, { token: state.employeeToken });
+        await request(step, LEASE_API, `/vehicles/${state.vehicleId}`, {
+          method: "PUT", token: state.employeeToken, body: vehicle("Gewijzigd")
+        });
+      },
+      async 4(step) {
+        requireState("brokerToken", "employeeToken");
+        await request(step, INTEREST_API, "/interest-rates?page=0&size=5", { token: state.brokerToken });
+        const dayOffset = Math.floor(Date.now() % 2000000);
+        state.rateDate = new Date(Date.UTC(2050, 0, 1) + dayOffset * 86400000).toISOString().slice(0, 10);
+        const created = await request(step, INTEREST_API, "/interest-rates", {
+          method: "POST", token: state.employeeToken,
+          body: { interestRate: 4.4, startDate: state.rateDate }, expected: 201
+        });
+        state.rateId = created.body.id;
+        await request(step, INTEREST_API, `/interest-rates/${state.rateId}`, { token: state.brokerToken });
+        await request(step, INTEREST_API, `/interest-rates/${state.rateId}`, { token: state.employeeToken });
+        await request(step, INTEREST_API, `/interest-rates/${state.rateId}`, {
+          method: "PUT", token: state.employeeToken,
+          body: { interestRate: 4.5, startDate: state.rateDate }
+        });
+        await request(step, INTEREST_API, `/interest-rates/effective?date=${state.rateDate}`, { token: state.brokerToken });
+        await request(step, INTEREST_API, "/interest-rates/effective?date=2015-02-05", { token: state.brokerToken });
+      },
+      async 5(step) {
+        requireState("brokerToken", "vehicleId", "rateDate");
+        await request(step, LEASE_API, "/lease-quotes", {
+          method: "POST", token: state.brokerToken, body: quote(state.rateDate)
+        });
+      },
+      async 6(step) {
+        requireState("brokerToken", "employeeToken", "vehicleId", "rateId", "rateDate");
+        await request(step, LEASE_API, "/customers", { expected: 401 });
+        await request(step, INTEREST_API, "/interest-rates", { expected: 401 });
+        await request(step, LEASE_API, "/vehicles", { token: "ongeldig", expected: 401 });
+        await request(step, LEASE_API, "/auth/login", {
+          method: "POST", body: { username: value("broker-username"), password: "verkeerd" }, expected: 401
+        });
+        await request(step, LEASE_API, "/customers", { token: state.employeeToken, expected: 403 });
+        await request(step, LEASE_API, `/vehicles/${state.vehicleId}`, { method: "DELETE", token: state.brokerToken, expected: 403 });
+        await request(step, INTEREST_API, `/interest-rates/${state.rateId}`, { method: "DELETE", token: state.brokerToken, expected: 403 });
+        await request(step, LEASE_API, "/lease-quotes", { method: "POST", token: state.employeeToken, body: quote(state.rateDate), expected: 403 });
+      },
+      async 7(step) {
+        requireState("brokerToken", "employeeToken", "vehicleId", "rateDate");
+        await request(step, LEASE_API, "/customers", { method: "POST", token: state.brokerToken, body: {}, expected: 400 });
+        await request(step, LEASE_API, "/vehicles", { method: "POST", token: state.employeeToken, body: {}, expected: 400 });
+        await request(step, INTEREST_API, "/interest-rates", { method: "POST", token: state.employeeToken, body: {}, expected: 400 });
+        await request(step, LEASE_API, "/lease-quotes", { method: "POST", token: state.brokerToken, body: {}, expected: 400 });
+        await request(step, LEASE_API, "/customers", {
+          method: "POST", token: state.brokerToken,
+          body: { ...customer("Test"), email: "ongeldig" }, expected: 400
+        });
+        await request(step, LEASE_API, "/lease-quotes", {
+          method: "POST", token: state.brokerToken, body: { ...quote(state.rateDate), mileage: 0 }, expected: 400
+        });
+        await request(step, LEASE_API, "/customers", { method: "POST", token: state.brokerToken, rawBody: "{", expected: 400 });
+        await request(step, LEASE_API, "/vehicles/geen-uuid", { token: state.brokerToken, expected: 400 });
+        await request(step, INTEREST_API, "/interest-rates/effective?date=ongeldig", { token: state.brokerToken, expected: 400 });
+        await request(step, LEASE_API, "/customers?page=-1&size=5", { token: state.brokerToken, expected: 400 });
+        await request(step, INTEREST_API, "/interest-rates", {
+          method: "POST", token: state.employeeToken,
+          body: { interestRate: 4.5, startDate: state.rateDate }, expected: 409
+        });
+        await request(step, INTEREST_API, "/interest-rates/effective?date=2014-04-30", { token: state.brokerToken, expected: 404 });
+        await request(step, LEASE_API, "/lease-quotes", {
+          method: "POST", token: state.brokerToken, body: quote("2014-04-30"), expected: 422
+        });
+      },
+      async 8(step) {
+        requireState("brokerToken", "employeeToken", "customerId", "vehicleId", "rateId", "rateDate");
+        await request(step, LEASE_API, `/customers/${state.customerId}`, { method: "DELETE", token: state.brokerToken, expected: 204 });
+        await request(step, LEASE_API, `/customers/${state.customerId}`, { token: state.brokerToken, expected: 404 });
+        await request(step, LEASE_API, `/vehicles/${state.vehicleId}`, { method: "DELETE", token: state.employeeToken, expected: 204 });
+        await request(step, LEASE_API, `/vehicles/${state.vehicleId}`, { token: state.brokerToken, expected: 404 });
+        await request(step, INTEREST_API, `/interest-rates/${state.rateId}`, { method: "DELETE", token: state.employeeToken, expected: 204 });
+        await request(step, INTEREST_API, `/interest-rates/${state.rateId}`, { token: state.brokerToken, expected: 404 });
+        await request(step, LEASE_API, "/lease-quotes", { method: "POST", token: state.brokerToken, body: quote(state.rateDate), expected: 404 });
+      }
+    };
+
+    async function runStep(step) {
+      const button = document.querySelector(`[data-step="${step}"]`);
+      output(step).textContent = "";
+      button.disabled = true;
+      button.classList.add("opacity-60", "cursor-wait");
+      try {
+        await steps[step](step);
+        append(step, "\n✓ Stap geslaagd");
+      } catch (error) {
+        append(step, `\n✗ ${error.message}`);
+        throw error;
+      } finally {
+        button.disabled = false;
+        button.classList.remove("opacity-60", "cursor-wait");
+        updateState();
+      }
+    }
+
+    document.querySelectorAll(".run-step").forEach(button => {
+      button.addEventListener("click", () => runStep(Number(button.dataset.step)).catch(() => {}));
+    });
+    document.getElementById("run-all").addEventListener("click", async event => {
+      event.currentTarget.disabled = true;
+      try {
+        for (let step = 1; step <= 8; step++) await runStep(step);
+      } catch (_) {
+        // De relevante terminal bevat de fout en stopt de afhankelijke reeks.
+      } finally {
+        event.currentTarget.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

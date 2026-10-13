@@ -86,6 +86,16 @@ docker compose ps -a
 docker compose logs --tail=50 lease-api interest-rate-service
 ```
 
+Open the API-testdashboard after both services have started:
+
+```text
+http://localhost:8082
+```
+
+The dashboard runs the eight groups from
+[test-run.md](assesment/docs/test-run.md), carries tokens and created IDs between steps,
+and prints every HTTP response in a separate terminal panel.
+
 Docker's `Started` message only means the container was launched. If the logs
 show `Demo account configuration is invalid`, regenerate both hashes above
 and run `docker compose up -d --force-recreate lease-api` in the same terminal.

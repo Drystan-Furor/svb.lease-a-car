@@ -37,6 +37,18 @@ def ready(port):
     raise AssertionError(f"Service on port {port} not ready")
 
 
+def dashboard_ready():
+    for attempt in range(60):
+        try:
+            with urllib.request.urlopen("http://localhost:8082/", timeout=10) as response:
+                page = response.read().decode()
+                assert response.status == 200 and "API-testdashboard" in page
+                return
+        except (OSError, AssertionError):
+            time.sleep(1)
+    raise AssertionError("Dashboard on port 8082 not ready")
+
+
 def compose(*args):
     subprocess.run(["docker", "compose", *args], check=True)
 
@@ -65,6 +77,9 @@ def create_and_update(path, body, token, field, value, port=8080):
 
 for service_port in (8080, 8081):
     ready(service_port)
+dashboard_ready()
+request("GET", "/lease-api/customers", 401, port=8082)
+request("GET", "/interest-api/interest-rates", 401, port=8082)
 broker = login("broker")
 employee = login("employee")
 request("POST", "/auth/login", 401, body={"username": "broker", "password": "wrong"})
