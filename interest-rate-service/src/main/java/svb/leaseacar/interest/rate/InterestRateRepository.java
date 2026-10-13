@@ -1,4 +1,4 @@
-package svb.leaseacar.interest;
+package svb.leaseacar.interest.rate;
 
 import java.time.LocalDate;
 import java.util.Comparator;

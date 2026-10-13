@@ -1,4 +1,4 @@
-package svb.leaseacar.interest;
+package svb.leaseacar.interest.security;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 

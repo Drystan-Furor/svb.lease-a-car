@@ -1,4 +1,4 @@
-package svb.leaseacar.interest;
+package svb.leaseacar.interest.rate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

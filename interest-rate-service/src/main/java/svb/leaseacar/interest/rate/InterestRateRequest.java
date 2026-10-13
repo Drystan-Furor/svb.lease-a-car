@@ -1,4 +1,4 @@
-package svb.leaseacar.interest;
+package svb.leaseacar.interest.rate;
 
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;

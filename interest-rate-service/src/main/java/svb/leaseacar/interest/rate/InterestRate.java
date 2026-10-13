@@ -1,4 +1,4 @@
-package svb.leaseacar.interest;
+package svb.leaseacar.interest.rate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
