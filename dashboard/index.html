@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lease-a-car API-testdashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.8/dist/htmx.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -33,7 +34,7 @@
           <a class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
              href="https://github.com/Drystan-Furor/svb.lease-a-car/blob/master/assesment/docs/test-run.md"
              target="_blank" rel="noreferrer">Open test-run.md</a>
-          <button id="run-all" class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+          <button id="run-all" hx-on:click="runAllSteps(this)" class="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60">
             Voer stappen 1–8 uit
           </button>
         </div>
@@ -65,45 +66,37 @@
     </section>
 
     <div class="grid gap-6">
-      <section id="step-1" class="rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 1</p><h2 class="mt-1 text-xl font-semibold">Inloggen</h2><p class="mt-2 text-sm text-slate-600">Logt BROKER en EMPLOYEE in en bewaart beide tokens voor volgende groepen.</p><button data-step="1" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 1 uit</button></div>
-        <pre id="output-1" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
-        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      <section id="step-1" class="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]" data-layout="step-card">
+        <div data-panel="action" class="flex flex-col border-b border-slate-200 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 1</p><h2 class="mt-1 text-xl font-semibold">Inloggen</h2><p class="mt-2 text-sm leading-6 text-slate-600">Logt BROKER en EMPLOYEE in en bewaart beide tokens voor volgende groepen.</p><button data-step="1" hx-on:click="runSingleStep(1)" class="run-step mt-5 w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto lg:w-full">Voer stap 1 uit</button><a href="#top" class="mt-5 text-xs font-semibold text-brand-700 hover:underline lg:mt-auto lg:pt-8">Terug naar boven</a></div>
+        <pre id="output-1" data-panel="terminal" aria-live="polite" class="min-h-52 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300 lg:min-h-72">Nog niet uitgevoerd.</pre>
       </section>
-      <section id="step-2" class="rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 2</p><h2 class="mt-1 text-xl font-semibold">Klanten</h2><p class="mt-2 text-sm text-slate-600">Test lijst, toevoegen, ophalen en volledig wijzigen als BROKER.</p><button data-step="2" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 2 uit</button></div>
-        <pre id="output-2" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
-        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      <section id="step-2" class="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]" data-layout="step-card">
+        <div data-panel="action" class="flex flex-col border-b border-slate-200 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 2</p><h2 class="mt-1 text-xl font-semibold">Klanten</h2><p class="mt-2 text-sm leading-6 text-slate-600">Test lijst, toevoegen, ophalen en volledig wijzigen als BROKER.</p><button data-step="2" hx-on:click="runSingleStep(2)" class="run-step mt-5 w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto lg:w-full">Voer stap 2 uit</button><a href="#top" class="mt-5 text-xs font-semibold text-brand-700 hover:underline lg:mt-auto lg:pt-8">Terug naar boven</a></div>
+        <pre id="output-2" data-panel="terminal" aria-live="polite" class="min-h-52 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300 lg:min-h-72">Nog niet uitgevoerd.</pre>
       </section>
-      <section id="step-3" class="rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 3</p><h2 class="mt-1 text-xl font-semibold">Voertuigen</h2><p class="mt-2 text-sm text-slate-600">Test lijst, toevoegen, ophalen met beide rollen en wijzigen als EMPLOYEE.</p><button data-step="3" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 3 uit</button></div>
-        <pre id="output-3" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
-        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      <section id="step-3" class="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]" data-layout="step-card">
+        <div data-panel="action" class="flex flex-col border-b border-slate-200 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 3</p><h2 class="mt-1 text-xl font-semibold">Voertuigen</h2><p class="mt-2 text-sm leading-6 text-slate-600">Test lijst, toevoegen, ophalen met beide rollen en wijzigen als EMPLOYEE.</p><button data-step="3" hx-on:click="runSingleStep(3)" class="run-step mt-5 w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto lg:w-full">Voer stap 3 uit</button><a href="#top" class="mt-5 text-xs font-semibold text-brand-700 hover:underline lg:mt-auto lg:pt-8">Terug naar boven</a></div>
+        <pre id="output-3" data-panel="terminal" aria-live="polite" class="min-h-52 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300 lg:min-h-72">Nog niet uitgevoerd.</pre>
       </section>
-      <section id="step-4" class="rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 4</p><h2 class="mt-1 text-xl font-semibold">Rente</h2><p class="mt-2 text-sm text-slate-600">Test lijst, CRUD-leesacties, wijzigen en effectieve rente op twee datums.</p><button data-step="4" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 4 uit</button></div>
-        <pre id="output-4" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
-        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      <section id="step-4" class="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]" data-layout="step-card">
+        <div data-panel="action" class="flex flex-col border-b border-slate-200 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 4</p><h2 class="mt-1 text-xl font-semibold">Rente</h2><p class="mt-2 text-sm leading-6 text-slate-600">Test lijst, CRUD-leesacties, wijzigen en effectieve rente op twee datums.</p><button data-step="4" hx-on:click="runSingleStep(4)" class="run-step mt-5 w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto lg:w-full">Voer stap 4 uit</button><a href="#top" class="mt-5 text-xs font-semibold text-brand-700 hover:underline lg:mt-auto lg:pt-8">Terug naar boven</a></div>
+        <pre id="output-4" data-panel="terminal" aria-live="polite" class="min-h-52 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300 lg:min-h-72">Nog niet uitgevoerd.</pre>
       </section>
-      <section id="step-5" class="rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 5</p><h2 class="mt-1 text-xl font-semibold">Leasequote</h2><p class="mt-2 text-sm text-slate-600">Laat Lease API voertuig en rente combineren tot het verwachte maandbedrag.</p><button data-step="5" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 5 uit</button></div>
-        <pre id="output-5" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
-        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      <section id="step-5" class="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]" data-layout="step-card">
+        <div data-panel="action" class="flex flex-col border-b border-slate-200 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 5</p><h2 class="mt-1 text-xl font-semibold">Leasequote</h2><p class="mt-2 text-sm leading-6 text-slate-600">Laat Lease API voertuig en rente combineren tot het verwachte maandbedrag.</p><button data-step="5" hx-on:click="runSingleStep(5)" class="run-step mt-5 w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto lg:w-full">Voer stap 5 uit</button><a href="#top" class="mt-5 text-xs font-semibold text-brand-700 hover:underline lg:mt-auto lg:pt-8">Terug naar boven</a></div>
+        <pre id="output-5" data-panel="terminal" aria-live="polite" class="min-h-52 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300 lg:min-h-72">Nog niet uitgevoerd.</pre>
       </section>
-      <section id="step-6" class="rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 6</p><h2 class="mt-1 text-xl font-semibold">Toegangscontrole</h2><p class="mt-2 text-sm text-slate-600">Controleert 401 bij ontbrekende of ongeldige login en 403 bij verkeerde rol.</p><button data-step="6" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 6 uit</button></div>
-        <pre id="output-6" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
-        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      <section id="step-6" class="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]" data-layout="step-card">
+        <div data-panel="action" class="flex flex-col border-b border-slate-200 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 6</p><h2 class="mt-1 text-xl font-semibold">Toegangscontrole</h2><p class="mt-2 text-sm leading-6 text-slate-600">Controleert 401 bij ontbrekende of ongeldige login en 403 bij verkeerde rol.</p><button data-step="6" hx-on:click="runSingleStep(6)" class="run-step mt-5 w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto lg:w-full">Voer stap 6 uit</button><a href="#top" class="mt-5 text-xs font-semibold text-brand-700 hover:underline lg:mt-auto lg:pt-8">Terug naar boven</a></div>
+        <pre id="output-6" data-panel="terminal" aria-live="polite" class="min-h-52 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300 lg:min-h-72">Nog niet uitgevoerd.</pre>
       </section>
-      <section id="step-7" class="rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 7</p><h2 class="mt-1 text-xl font-semibold">Validatie en fouten</h2><p class="mt-2 text-sm text-slate-600">Controleert 400, 404, 409 en 422 voor ongeldige of conflicterende invoer.</p><button data-step="7" class="run-step mt-5 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Voer stap 7 uit</button></div>
-        <pre id="output-7" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
-        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      <section id="step-7" class="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]" data-layout="step-card">
+        <div data-panel="action" class="flex flex-col border-b border-slate-200 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 7</p><h2 class="mt-1 text-xl font-semibold">Validatie en fouten</h2><p class="mt-2 text-sm leading-6 text-slate-600">Controleert 400, 404, 409 en 422 voor ongeldige of conflicterende invoer.</p><button data-step="7" hx-on:click="runSingleStep(7)" class="run-step mt-5 w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60 sm:w-auto lg:w-full">Voer stap 7 uit</button><a href="#top" class="mt-5 text-xs font-semibold text-brand-700 hover:underline lg:mt-auto lg:pt-8">Terug naar boven</a></div>
+        <pre id="output-7" data-panel="terminal" aria-live="polite" class="min-h-52 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300 lg:min-h-72">Nog niet uitgevoerd.</pre>
       </section>
-      <section id="step-8" class="rounded-lg border border-slate-200 bg-white shadow-sm">
-        <div class="p-6"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 8</p><h2 class="mt-1 text-xl font-semibold">Testrecords verwijderen</h2><p class="mt-2 text-sm text-slate-600">Verwijdert eigen klant, voertuig en rente en controleert daarna de 404-responses.</p><button data-step="8" class="run-step mt-5 rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-800">Voer stap 8 uit</button></div>
-        <pre id="output-8" aria-live="polite" class="min-h-36 overflow-x-auto whitespace-pre-wrap rounded-b-lg bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300">Nog niet uitgevoerd.</pre>
-        <a href="#top" class="block px-6 py-3 text-right text-xs font-semibold text-brand-700 hover:underline">Terug naar boven</a>
+      <section id="step-8" class="grid overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]" data-layout="step-card">
+        <div data-panel="action" class="flex flex-col border-b border-slate-200 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Stap 8</p><h2 class="mt-1 text-xl font-semibold">Testrecords verwijderen</h2><p class="mt-2 text-sm leading-6 text-slate-600">Verwijdert eigen klant, voertuig en rente en controleert daarna de 404-responses.</p><button data-step="8" hx-on:click="runSingleStep(8)" class="run-step mt-5 w-full rounded-md bg-rose-700 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-800 disabled:cursor-wait disabled:opacity-60 sm:w-auto lg:w-full">Voer stap 8 uit</button><a href="#top" class="mt-5 text-xs font-semibold text-brand-700 hover:underline lg:mt-auto lg:pt-8">Terug naar boven</a></div>
+        <pre id="output-8" data-panel="terminal" aria-live="polite" class="min-h-52 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-5 font-mono text-xs leading-5 text-emerald-300 lg:min-h-72">Nog niet uitgevoerd.</pre>
       </section>
     </div>
   </main>
@@ -316,19 +309,20 @@
       }
     }
 
-    document.querySelectorAll(".run-step").forEach(button => {
-      button.addEventListener("click", () => runStep(Number(button.dataset.step)).catch(() => {}));
-    });
-    document.getElementById("run-all").addEventListener("click", async event => {
-      event.currentTarget.disabled = true;
+    function runSingleStep(step) {
+      runStep(step).catch(() => {});
+    }
+
+    async function runAllSteps(button) {
+      button.disabled = true;
       try {
         for (let step = 1; step <= 8; step++) await runStep(step);
       } catch (_) {
         // De relevante terminal bevat de fout en stopt de afhankelijke reeks.
       } finally {
-        event.currentTarget.disabled = false;
+        button.disabled = false;
       }
-    });
+    }
   </script>
 </body>
 </html>

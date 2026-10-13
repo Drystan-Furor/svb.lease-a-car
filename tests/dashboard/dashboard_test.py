@@ -47,6 +47,32 @@ class DashboardContractTests(unittest.TestCase):
         self.assertIn("assesment/docs/test-run.md", self.index)
         self.assertEqual(8, self.index.count('href="#top"'))
 
+    def test_page_uses_htmx_for_declarative_actions(self):
+        self.assertIn(
+            "https://unpkg.com/htmx.org@2.0.8/dist/htmx.min.js", self.index
+        )
+        self.assertIn('hx-on:click="runAllSteps(this)"', self.index)
+        for step in range(1, 9):
+            with self.subTest(step=step):
+                self.assertIn(
+                    f'hx-on:click="runSingleStep({step})"', self.index
+                )
+        self.assertNotIn('querySelectorAll(".run-step")', self.index)
+        self.assertNotIn("addEventListener", self.index)
+
+    def test_step_cards_stack_on_mobile_and_split_action_from_terminal_on_desktop(self):
+        cards = re.findall(
+            r'<section id="step-[1-8]"[^>]*data-layout="step-card"[^>]*>',
+            self.index,
+        )
+
+        self.assertEqual(8, len(cards))
+        for card in cards:
+            self.assertIn("grid", card)
+            self.assertIn("lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.5fr)]", card)
+        self.assertEqual(8, self.index.count('data-panel="action"'))
+        self.assertEqual(8, self.index.count('data-panel="terminal"'))
+
     def test_browser_calls_same_origin_reverse_proxies(self):
         self.assertIn('const LEASE_API = "/lease-api"', self.index)
         self.assertIn('const INTEREST_API = "/interest-api"', self.index)
