@@ -3,6 +3,9 @@
 Lease-a-car is a Java 21 / Spring Boot 4 two-service leasing API. It separates lease operations
 from interest-rate management. Both services validate the caller's identity on every request.
 
+For a complete manual assessment workflow with executable curl commands and expected results,
+see [test-run.md](test-run.md).
+
 ## Current scope
 
 Two independently buildable services exist:
