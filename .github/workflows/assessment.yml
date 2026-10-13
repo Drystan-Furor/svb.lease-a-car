@@ -1,0 +1,26 @@
+name: S10 assessment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  assessment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Build and exercise both services from a clean checkout
+        shell: bash
+        run: |
+          set -o pipefail
+          sh tests/e2e/docker-smoke.sh 2>&1 | tee assessment-evidence.log
+      - name: Save build, environment and functional evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: assessment-evidence-${{ github.sha }}
+          path: assessment-evidence.log
+          if-no-files-found: error

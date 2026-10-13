@@ -7,9 +7,8 @@ from interest-rate management. Both services validate the caller's identity on e
 
 Two independently buildable services exist:
 
-- `lease-api` owns login, vehicle management, lease calculations, and quotes. It will own
-  customers.
-- `interest-rate-service` will own dated interest rates.
+- `lease-api` owns login, customers, vehicle management, lease calculations, and quotes.
+- `interest-rate-service` owns dated interest rates.
 
 Implemented behavior is stateless JWT login, in-memory customer and vehicle CRUD, historical
 interest-rate CRUD, and broker quotes that call the interest-rate service. The calculator has no
@@ -213,7 +212,9 @@ negative.
 
 ## Requirements
 
-- Docker Desktop or another Docker engine for reproducible verification.
+- Docker Desktop or another Docker engine with Docker Compose v2 or newer.
+- Git to obtain the source; OpenSSL for generating the shared secret.
+- For the automated assessment demo: Python 3, POSIX shell, and free ports 8080 and 8081.
 - Optional for local development: JDK 21 or newer.
 
 Maven Wrapper is committed. Installing Maven is not required.
@@ -303,11 +304,73 @@ Runtime images use a pinned Java 21 JRE base image, contain only their verified 
 and run as a non-root user. The Docker build was tested on Docker Desktop using its default
 supported architecture; no platform is forced.
 
-Run the automated start/stop smoke check with:
+Run the complete assessment demo from the repository root with:
 
 ```sh
 sh tests/e2e/docker-smoke.sh
 ```
+
+The script builds with `--no-cache`, generates temporary credentials, starts both services,
+and runs [assessment-smoke.py](tests/e2e/assessment-smoke.py). It checks supplied fixture counts,
+both logins, customer/vehicle/rate create-read-update-delete cycles, historical interest, and a
+EUR 239.82 quote at 4.5%. It also checks invalid credentials (`401`), wrong roles (`403`), and a
+stopped interest service (`503` ProblemDetail without `monthlyRate`). It recreates the containers
+and repeats the demo to check reset behavior. Each successful HTTP assertion prints its status;
+any mismatch exits nonzero. Tokens and passwords are not printed.
+
+Compose project `lease-assessment-smoke` isolates the demo's containers and network. Ports still
+belong to the host: stop any services using 8080/8081 first. The exit handler removes this demo's
+containers and network, including after a failed check. Do not run concurrent copies of the demo
+against the same Docker engine. No host JDK, Maven, or prebuilt JAR is used.
+
+## Assessment handover and evidence
+
+Source remote: [Drystan-Furor/svb.lease-a-car](https://github.com/Drystan-Furor/svb.lease-a-car).
+An assessor with repository access can obtain a clean copy:
+
+```sh
+git clone https://github.com/Drystan-Furor/svb.lease-a-car.git
+cd svb.lease-a-car
+git checkout <delivery-commit>
+sh tests/e2e/docker-smoke.sh
+```
+
+Replace `<delivery-commit>` with the full SHA recorded in the evidence. The script prints that
+SHA, working-tree changes, host OS/CPU, Docker client/server versions, Compose version, build
+results, and functional assertions. A delivery run must start with an empty working-tree status.
+The Dockerfile copies only committed source inputs and performs Maven `verify` inside Java 21.
+Both module builds run unit/integration tests and Google Java Style checks before producing JARs.
+Javadoc describes public request/response contracts, validation, seed import rules, historical
+selection, and the calculator's precision and rounding.
+
+### Second environment
+
+S10 remains incomplete until the same delivery commit passes on a second clean Docker host and
+the assessor can access the remote. A second local Compose project alone is not this proof.
+The manually dispatched [S10 assessment workflow](.github/workflows/assessment.yml) provides a
+fresh Ubuntu 24.04 runner and runs the exact command above. Although the runner may have Java
+installed, the build uses only the Docker toolchain and no local JARs or host Java/Maven commands.
+
+After pushing the delivery commit, select **Actions → S10 assessment → Run workflow** on its
+branch. Download `assessment-evidence-<commit>` from that run. Keep the run URL and evidence with
+the delivery; artifact retention follows repository settings. Record actual results here:
+
+| Evidence | Status |
+| --- | --- |
+| Local Docker demo | 2026-10-13: Darwin arm64, Docker Desktop 4.94.0, Engine 29.8.2 linux/arm64, Compose 5.5.1; 50 tests, zero style violations, CRUD/quote/401/403/503/reset passed |
+| Delivery commit | Pending commit and remote publication |
+| Second-host OS/CPU and Docker/Compose versions | Pending workflow evidence |
+| Second-host build/tests/style and CRUD/quote/401/403/503/reset | Not yet demonstrated |
+| Assessor clone/access | Not yet confirmed; maintainer access alone is insufficient |
+
+### Known limits
+
+Storage is temporary. Restarting either service discards its manual changes and restores its
+packaged fixtures; customers restart empty. Vehicle and rate IDs must be obtained from API
+responses, not copied between runs. Quote results are not persisted. Authentication uses two
+configured demo accounts and a shared signing secret; there is no account administration,
+refresh-token or revocation flow. Swagger and durable storage are separate bonus stories.
+The literal formula yields EUR 239.82 for the assignment inputs, as documented above.
 
 ## Run services locally
 
@@ -339,7 +402,7 @@ available.
 ## Project layout
 
 ```text
-lease-api/                 Login, vehicles, quotes, and lease calculator
+lease-api/                 Login, customers, vehicles, quotes, and lease calculator
 interest-rate-service/     Historical interest-rate service module
 Dockerfile                 Java 21 verification build stage
 assesment/docs/            Assessment, implementation plan, decisions
