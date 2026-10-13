@@ -331,11 +331,11 @@ An assessor with repository access can obtain a clean copy:
 ```sh
 git clone https://github.com/Drystan-Furor/svb.lease-a-car.git
 cd svb.lease-a-car
-git checkout <delivery-commit>
+git checkout 37fb9a00e4b8bfd66edcab3df120cedd18202610
 sh tests/e2e/docker-smoke.sh
 ```
 
-Replace `<delivery-commit>` with the full SHA recorded in the evidence. The script prints that
+The checkout above selects the delivery SHA verified on both environments. The script prints that
 SHA, working-tree changes, host OS/CPU, Docker client/server versions, Compose version, build
 results, and functional assertions. A delivery run must start with an empty working-tree status.
 The Dockerfile copies only committed source inputs and performs Maven `verify` inside Java 21.
@@ -345,23 +345,26 @@ selection, and the calculator's precision and rounding.
 
 ### Second environment
 
-S10 remains incomplete until the same delivery commit passes on a second clean Docker host and
-the assessor can access the remote. A second local Compose project alone is not this proof.
+S10 passed on 2026-10-13. The same delivery commit passed on the local Docker host and a fresh
+GitHub-hosted runner. The user confirmed they are the assessor; their repository ADMIN access was
+verified. The repository remains private; the owner will make it public themselves.
 The manually dispatched [S10 assessment workflow](.github/workflows/assessment.yml) provides a
 fresh Ubuntu 24.04 runner and runs the exact command above. Although the runner may have Java
 installed, the build uses only the Docker toolchain and no local JARs or host Java/Maven commands.
 
 After pushing the delivery commit, select **Actions → S10 assessment → Run workflow** on its
 branch. Download `assessment-evidence-<commit>` from that run. Keep the run URL and evidence with
-the delivery; artifact retention follows repository settings. Record actual results here:
+the delivery; artifact retention follows repository settings. Selected output is also committed below so the
+evidence remains available after the artifact expires.
 
 | Evidence | Status |
 | --- | --- |
 | Local Docker demo | 2026-10-13: Darwin arm64, Docker Desktop 4.94.0, Engine 29.8.2 linux/arm64, Compose 5.5.1; 50 tests, zero style violations, CRUD/quote/401/403/503/reset passed |
-| Locally verified commit | `9e831998d352d0887e79d181d8378e0b263e9ae9`, clean worktree; [recorded output](tests/evidence/s10-local.log). Later evidence-only changes do not change runtime or tests. Remote publication pending |
-| Second-host OS/CPU and Docker/Compose versions | Pending workflow evidence |
-| Second-host build/tests/style and CRUD/quote/401/403/503/reset | Not yet demonstrated |
-| Assessor clone/access | Remote is private; maintainer has ADMIN access. Assessor access not yet confirmed |
+| Verified delivery commit | `37fb9a00e4b8bfd66edcab3df120cedd18202610`; clean worktree on both hosts. Subsequent commits record evidence only. |
+| Local evidence | [Recorded output](tests/evidence/s10-local.log) |
+| Second-host OS/CPU and Docker/Compose versions | Ubuntu 24.04, Linux x86_64; Docker client/server 28.0.4 linux/amd64; Compose 2.38.2 |
+| Second-host build/tests/style and CRUD/quote/401/403/503/reset | Passed: 50 tests, zero failures/errors/skips, zero style violations; full demo passed twice across container recreation. [Successful run](https://github.com/Drystan-Furor/svb.lease-a-car/actions/runs/38394349519) and [recorded output](tests/evidence/s10-github.log) |
+| Remote publication and assessor access | Delivery commit pushed to origin and checked out by Actions. User confirmed they are the assessor; their ADMIN access verified. Public visibility will be changed separately by the owner. |
 
 ### Known limits
 
