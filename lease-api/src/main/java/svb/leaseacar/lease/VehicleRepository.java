@@ -24,6 +24,20 @@ class VehicleRepository {
     return Optional.ofNullable(vehicles.get(id));
   }
 
+  boolean isEmpty() {
+    return vehicles.isEmpty();
+  }
+
+  synchronized boolean createAllIfEmpty(List<VehicleRequest> requests) {
+    if (!vehicles.isEmpty()) {
+      return false;
+    }
+    for (VehicleRequest request : requests) {
+      create(request);
+    }
+    return true;
+  }
+
   Optional<Vehicle> replace(UUID id, VehicleRequest request) {
     return Optional.ofNullable(
         vehicles.computeIfPresent(id, (ignored, existing) -> fromRequest(id, request)));

@@ -120,8 +120,10 @@ optional; when supplied it is measured in g/km and cannot be negative. Invalid i
 `400` as ProblemDetail. List defaults are page `0`, size `50`; maximum size is `100`. Results are
 sorted by UUID. Identical versions remain separate records with separate UUIDs.
 
-Vehicles are held in memory. Every application or container restart clears manually entered
-vehicles; CSV demo-data import belongs to a later story.
+Vehicles are held in memory. Every application or container restart reloads all 10,329 supplied
+vehicle rows, including duplicate versions; manually entered vehicles are cleared. The packaged
+vehicle CSV uses Windows-1252, semicolons, quoted values, and decimal commas. Its source `hp`
+column is deliberately not mapped to CO₂.
 
 ## Interest-rate API
 
@@ -150,7 +152,8 @@ Create or replace request:
 rate may use each `startDate`; a conflicting `POST` or `PUT` returns `409` and changes nothing.
 List defaults are page `0`, size `50`; maximum size is `100`. Results sort by UUID.
 
-Each startup reloads the 20 supplied historical rates into memory. For example, effective dates
+Each startup reloads the 20 supplied historical rates into memory. The packaged rate CSV uses
+UTF-8, semicolons, decimal commas, and strict `d-M-uuuu` dates. For example, effective dates
 `2015-02-04`, `2015-02-05`, and `2015-02-19` return 1.25, -0.75, and 1 percent. Dates before
 `2014-05-01` return `404`; `4.35` percent applies from `2019-08-15` until a newer rate is added.
 Manual changes disappear at restart.

@@ -34,6 +34,25 @@ class InterestRateRepository {
     return Optional.ofNullable(rates.get(id));
   }
 
+  boolean isEmpty() {
+    return rates.isEmpty();
+  }
+
+  boolean createAllIfEmpty(List<InterestRateRequest> requests) {
+    synchronized (writeLock) {
+      if (!rates.isEmpty()) {
+        return false;
+      }
+      for (InterestRateRequest request : requests) {
+        InterestRate rate =
+            new InterestRate(UUID.randomUUID(), request.interestRate(), request.startDate());
+        rates.put(rate.id(), rate);
+        idsByStartDate.put(rate.startDate(), rate.id());
+      }
+      return true;
+    }
+  }
+
   Optional<InterestRate> replace(UUID id, InterestRateRequest request) {
     synchronized (writeLock) {
       InterestRate existing = rates.get(id);

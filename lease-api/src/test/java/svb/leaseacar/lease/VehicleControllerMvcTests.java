@@ -162,14 +162,14 @@ class VehicleControllerMvcTests {
         .andExpect(jsonPath("$.items", hasSize(50)))
         .andExpect(jsonPath("$.page").value(0))
         .andExpect(jsonPath("$.size").value(50))
-        .andExpect(jsonPath("$.total").value(51));
+        .andExpect(jsonPath("$.total").value(10_380));
     mockMvc
         .perform(get("/vehicles?page=1&size=10").header("Authorization", bearer(token)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.items", hasSize(10)))
         .andExpect(jsonPath("$.page").value(1))
         .andExpect(jsonPath("$.size").value(10))
-        .andExpect(jsonPath("$.total").value(51));
+        .andExpect(jsonPath("$.total").value(10_380));
     mockMvc
         .perform(get("/vehicles?page=-1").header("Authorization", bearer(token)))
         .andExpect(status().isBadRequest());
