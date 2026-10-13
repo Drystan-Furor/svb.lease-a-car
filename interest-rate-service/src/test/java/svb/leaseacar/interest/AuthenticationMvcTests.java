@@ -13,17 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootTest(
     properties = {
@@ -32,8 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
       "lease.jwt.audience=lease-platform"
     })
 @AutoConfigureMockMvc
-@ContextConfiguration(
-    classes = {InterestRateServiceApplication.class, AuthenticationMvcTests.TestRoutes.class})
 class AuthenticationMvcTests {
 
   private static final String TEST_SECRET =
@@ -109,8 +104,13 @@ class AuthenticationMvcTests {
         .andExpect(status().isOk());
     mockMvc.perform(post("/interest-rates").header("Authorization", bearer(broker)))
         .andExpect(status().isForbidden());
-    mockMvc.perform(post("/interest-rates").header("Authorization", bearer(employee)))
-        .andExpect(status().isOk());
+    mockMvc
+        .perform(
+            post("/interest-rates")
+                .header("Authorization", bearer(employee))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"interestRate\":1,\"startDate\":\"2022-01-01\"}"))
+        .andExpect(status().isCreated());
   }
 
   @Test
@@ -167,18 +167,5 @@ class AuthenticationMvcTests {
 
   private static String bearer(String token) {
     return "Bearer " + token;
-  }
-
-  @RestController
-  static class TestRoutes {
-    @GetMapping("/interest-rates")
-    String read() {
-      return "reached";
-    }
-
-    @PostMapping("/interest-rates")
-    String write() {
-      return "reached";
-    }
   }
 }

@@ -101,6 +101,43 @@ assert_services_ready() {
       "http://localhost:8080/vehicles/${vehicle_id}"
   )" = "204"
 
+  effective_rate="$(
+    curl --fail --silent --show-error \
+      --header "Authorization: Bearer ${access_token}" \
+      'http://localhost:8081/interest-rates/effective?date=2015-02-04'
+  )"
+  printf '%s\n' "$effective_rate" | grep -q '"interestRate":1.25'
+
+  interest_rate_response="$(
+    curl --fail --silent --show-error \
+      --header "Authorization: Bearer ${employee_token}" \
+      --header 'Content-Type: application/json' \
+      --data '{"interestRate":-0.5,"startDate":"2022-01-01"}' \
+      http://localhost:8081/interest-rates
+  )"
+  interest_rate_id="$(
+    printf '%s\n' "$interest_rate_response" \
+      | sed -n 's/.*"id":"\([^"]*\)".*/\1/p'
+  )"
+  test -n "$interest_rate_id"
+  test "$(
+    curl --silent --output /dev/null --write-out '%{http_code}' \
+      --header "Authorization: Bearer ${access_token}" \
+      "http://localhost:8081/interest-rates/${interest_rate_id}"
+  )" = "200"
+  test "$(
+    curl --silent --output /dev/null --write-out '%{http_code}' \
+      --request DELETE \
+      --header "Authorization: Bearer ${access_token}" \
+      "http://localhost:8081/interest-rates/${interest_rate_id}"
+  )" = "403"
+  test "$(
+    curl --silent --output /dev/null --write-out '%{http_code}' \
+      --request DELETE \
+      --header "Authorization: Bearer ${employee_token}" \
+      "http://localhost:8081/interest-rates/${interest_rate_id}"
+  )" = "204"
+
   test "$(
     curl --silent --output /dev/null --write-out '%{http_code}' \
       --header "Authorization: Bearer ${access_token}" \

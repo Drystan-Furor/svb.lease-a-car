@@ -11,9 +11,9 @@ Two independently buildable services exist:
   quotes.
 - `interest-rate-service` will own dated interest rates.
 
-Implemented behavior is stateless JWT login, in-memory vehicle CRUD, and the monthly-rate
-calculation in `lease-api`. The calculator has no HTTP endpoint yet. Customer CRUD, historical
-interest selection, quotes, and service-to-service calls are planned work, not current features.
+Implemented behavior is stateless JWT login, in-memory vehicle CRUD, historical interest-rate
+CRUD, and the monthly-rate calculation in `lease-api`. The calculator has no HTTP endpoint yet.
+Customer CRUD, quotes, and service-to-service calls are planned work, not current features.
 
 ## Authentication API
 
@@ -89,6 +89,38 @@ sorted by UUID. Identical versions remain separate records with separate UUIDs.
 
 Vehicles are held in memory. Every application or container restart clears manually entered
 vehicles; CSV demo-data import belongs to a later story.
+
+## Interest-rate API
+
+Interest-rate routes run on `interest-rate-service` and require a bearer token. `BROKER` and
+`EMPLOYEE` may read. Only `EMPLOYEE` may create, fully replace, or delete rates.
+
+| Method | Route | Result |
+| --- | --- | --- |
+| `POST` | `/interest-rates` | `201` with rate body and `Location` header |
+| `GET` | `/interest-rates/{id}` | `200`, or `404` for an unknown UUID |
+| `GET` | `/interest-rates?page=0&size=50` | Bounded page with `items`, `page`, `size`, and `total` |
+| `GET` | `/interest-rates/effective?date=YYYY-MM-DD` | Rate whose `startDate` is latest on or before `date` |
+| `PUT` | `/interest-rates/{id}` | Full replacement with `200`, or `404` |
+| `DELETE` | `/interest-rates/{id}` | `204`, or `404` |
+
+Create or replace request:
+
+```json
+{
+  "interestRate": -0.75,
+  "startDate": "2015-02-05"
+}
+```
+
+`interestRate` and ISO `startDate` are required. Zero and negative rates are valid. Exactly one
+rate may use each `startDate`; a conflicting `POST` or `PUT` returns `409` and changes nothing.
+List defaults are page `0`, size `50`; maximum size is `100`. Results sort by UUID.
+
+Each startup reloads the 20 supplied historical rates into memory. For example, effective dates
+`2015-02-04`, `2015-02-05`, and `2015-02-19` return 1.25, -0.75, and 1 percent. Dates before
+`2014-05-01` return `404`; `4.35` percent applies from `2019-08-15` until a newer rate is added.
+Manual changes disappear at restart.
 
 ## Lease-rate calculation
 
@@ -229,13 +261,14 @@ its own terminal with a local JDK; both terminals must inherit the same `JWT_SEC
 `8081`. Stop either service with `Ctrl+C`. Missing or invalid security configuration stops
 startup instead of falling back to a default credential.
 
-`POST /auth/login` and vehicle CRUD are available. Other business resources remain planned.
+`POST /auth/login`, vehicle CRUD, and interest-rate CRUD are available. Other business resources
+remain planned.
 
 ## Project layout
 
 ```text
 lease-api/                 Login, vehicle management, and lease calculator
-interest-rate-service/     Interest-rate service module
+interest-rate-service/     Historical interest-rate service module
 Dockerfile                 Java 21 verification build stage
 assesment/docs/            Assessment, implementation plan, decisions
 ```
