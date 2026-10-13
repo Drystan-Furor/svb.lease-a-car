@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.vehicle;
 
 import java.math.BigDecimal;
 import java.util.UUID;

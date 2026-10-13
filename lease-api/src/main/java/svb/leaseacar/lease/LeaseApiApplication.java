@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /** Entry point for the lease API service. */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "svb.leaseacar")
 public class LeaseApiApplication {
 
   public static void main(String[] args) {

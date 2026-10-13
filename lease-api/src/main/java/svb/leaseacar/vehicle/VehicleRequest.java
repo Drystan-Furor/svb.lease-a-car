@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.vehicle;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.vehicle;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

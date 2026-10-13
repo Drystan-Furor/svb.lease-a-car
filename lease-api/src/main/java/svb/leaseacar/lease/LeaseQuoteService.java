@@ -1,30 +1,27 @@
 package svb.leaseacar.lease;
 
 import java.math.BigDecimal;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import svb.leaseacar.interest.InterestRateClient;
+import svb.leaseacar.interest.InterestRateResponse;
+import svb.leaseacar.vehicle.Vehicle;
+import svb.leaseacar.vehicle.VehicleService;
 
 /** Combines local vehicle data with one historical-interest lookup to calculate a quote. */
 @Service
 class LeaseQuoteService {
 
-  private final VehicleRepository vehicleRepository;
+  private final VehicleService vehicleService;
   private final InterestRateClient interestRateClient;
   private final LeaseRateCalculator calculator = new LeaseRateCalculator();
 
-  LeaseQuoteService(VehicleRepository vehicleRepository, InterestRateClient interestRateClient) {
-    this.vehicleRepository = vehicleRepository;
+  LeaseQuoteService(VehicleService vehicleService, InterestRateClient interestRateClient) {
+    this.vehicleService = vehicleService;
     this.interestRateClient = interestRateClient;
   }
 
   LeaseQuote quote(LeaseQuoteRequest request, String bearerToken) {
-    Vehicle vehicle =
-        vehicleRepository
-            .findById(request.vehicleId())
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle not found"));
+    Vehicle vehicle = vehicleService.find(request.vehicleId());
     InterestRateResponse interestRate =
         interestRateClient.findEffectiveOn(request.startDate(), bearerToken);
     BigDecimal monthlyRate =

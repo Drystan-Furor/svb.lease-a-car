@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.interest;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 /** Calls the configured interest-rate service once for each accepted quote request. */
 @Component
-class InterestRateClient {
+public class InterestRateClient {
 
   private final RestClient restClient;
 
@@ -28,7 +28,7 @@ class InterestRateClient {
     restClient = RestClient.builder().baseUrl(baseUrl).requestFactory(requestFactory).build();
   }
 
-  InterestRateResponse findEffectiveOn(LocalDate date, String bearerToken) {
+  public InterestRateResponse findEffectiveOn(LocalDate date, String bearerToken) {
     try {
       InterestRateResponse response =
           restClient

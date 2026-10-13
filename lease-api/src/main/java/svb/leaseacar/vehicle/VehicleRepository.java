@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.vehicle;
 
 import java.util.Comparator;
 import java.util.List;

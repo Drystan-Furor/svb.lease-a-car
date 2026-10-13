@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 /** Input for a lease quote. Prices and interest rates are deliberately not client inputs. */
-record LeaseQuoteRequest(
+public record LeaseQuoteRequest(
     @NotNull UUID vehicleId,
     @NotNull @Positive Integer mileage,
     @NotNull @Positive Integer duration,

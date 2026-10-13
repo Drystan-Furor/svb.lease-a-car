@@ -1,32 +1,32 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.customer;
 
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-/** Coordinates vehicle CRUD operations and paging rules. */
+/** Coordinates customer CRUD operations and paging rules. */
 @Service
-class VehicleService {
+class CustomerService {
 
   static final int MAX_PAGE_SIZE = 100;
 
-  private final VehicleRepository repository;
+  private final CustomerRepository repository;
 
-  VehicleService(VehicleRepository repository) {
+  CustomerService(CustomerRepository repository) {
     this.repository = repository;
   }
 
-  Vehicle create(VehicleRequest request) {
+  Customer create(CustomerRequest request) {
     return repository.create(request);
   }
 
-  Vehicle find(UUID id) {
-    return repository.findById(id).orElseThrow(VehicleService::notFound);
+  Customer find(UUID id) {
+    return repository.findById(id).orElseThrow(CustomerService::notFound);
   }
 
-  Vehicle replace(UUID id, VehicleRequest request) {
-    return repository.replace(id, request).orElseThrow(VehicleService::notFound);
+  Customer replace(UUID id, CustomerRequest request) {
+    return repository.replace(id, request).orElseThrow(CustomerService::notFound);
   }
 
   void delete(UUID id) {
@@ -35,7 +35,7 @@ class VehicleService {
     }
   }
 
-  VehiclePage list(int page, int size) {
+  CustomerPage list(int page, int size) {
     if (page < 0 || size < 1 || size > MAX_PAGE_SIZE) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "page must be at least 0 and size must be between 1 and 100");
@@ -44,6 +44,6 @@ class VehicleService {
   }
 
   private static ResponseStatusException notFound() {
-    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle not found");
+    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
   }
 }

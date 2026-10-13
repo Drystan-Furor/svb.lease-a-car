@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.security;
 
 import java.nio.charset.StandardCharsets;
 import org.springframework.boot.context.properties.ConfigurationProperties;

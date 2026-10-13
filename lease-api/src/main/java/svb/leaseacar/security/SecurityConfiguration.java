@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.security;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import java.nio.charset.StandardCharsets;

@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.vehicle;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,11 @@ class VehicleCsvImporter {
             .setIgnoreSurroundingSpaces(true)
             .setTrim(true)
             .get();
-    try (CSVParser parser = new CSVParser(new InputStreamReader(source, WINDOWS_1252), format)) {
+    try (CSVParser parser =
+        CSVParser.builder()
+            .setReader(new InputStreamReader(source, WINDOWS_1252))
+            .setFormat(format)
+            .get()) {
       requireHeaders(parser);
       return parser.stream().map(this::toRequest).toList();
     } catch (IOException exception) {

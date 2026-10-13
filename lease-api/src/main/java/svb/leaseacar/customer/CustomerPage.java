@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.customer;
 
 import java.util.List;
 

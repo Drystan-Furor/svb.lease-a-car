@@ -40,7 +40,10 @@ class InterestRateCsvImporter {
             .setTrim(true)
             .get();
     try (CSVParser parser =
-        new CSVParser(new InputStreamReader(source, StandardCharsets.UTF_8), format)) {
+        CSVParser.builder()
+            .setReader(new InputStreamReader(source, StandardCharsets.UTF_8))
+            .setFormat(format)
+            .get()) {
       requireHeaders(parser);
       List<InterestRateRequest> requests = parser.stream().map(this::toRequest).toList();
       rejectDuplicateDates(requests);

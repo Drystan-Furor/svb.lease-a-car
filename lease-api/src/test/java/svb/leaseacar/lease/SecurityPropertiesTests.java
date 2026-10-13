@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import svb.leaseacar.security.AccountsProperties;
+import svb.leaseacar.security.JwtProperties;
 
 class SecurityPropertiesTests {
 

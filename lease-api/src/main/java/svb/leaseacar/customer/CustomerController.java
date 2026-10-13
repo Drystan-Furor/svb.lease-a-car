@@ -1,4 +1,4 @@
-package svb.leaseacar.lease;
+package svb.leaseacar.customer;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -15,42 +15,42 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-/** Exposes vehicle-version CRUD and bounded paging. */
+/** Exposes customer CRUD and bounded paging. */
 @RestController
-@RequestMapping("/vehicles")
-class VehicleController {
+@RequestMapping("/customers")
+class CustomerController {
 
-  private final VehicleService service;
+  private final CustomerService service;
 
-  VehicleController(VehicleService service) {
+  CustomerController(CustomerService service) {
     this.service = service;
   }
 
   @PostMapping
-  ResponseEntity<Vehicle> create(@Valid @RequestBody VehicleRequest request) {
-    Vehicle vehicle = service.create(request);
+  ResponseEntity<Customer> create(@Valid @RequestBody CustomerRequest request) {
+    Customer customer = service.create(request);
     URI location =
         ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
-            .buildAndExpand(vehicle.id())
+            .buildAndExpand(customer.id())
             .toUri();
-    return ResponseEntity.created(location).body(vehicle);
+    return ResponseEntity.created(location).body(customer);
   }
 
   @GetMapping("/{id}")
-  Vehicle find(@PathVariable UUID id) {
+  Customer find(@PathVariable UUID id) {
     return service.find(id);
   }
 
   @GetMapping
-  VehiclePage list(
+  CustomerPage list(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "50") int size) {
     return service.list(page, size);
   }
 
   @PutMapping("/{id}")
-  Vehicle replace(@PathVariable UUID id, @Valid @RequestBody VehicleRequest request) {
+  Customer replace(@PathVariable UUID id, @Valid @RequestBody CustomerRequest request) {
     return service.replace(id, request);
   }
 
