@@ -11,9 +11,9 @@ Two independently buildable services exist:
   customers.
 - `interest-rate-service` will own dated interest rates.
 
-Implemented behavior is stateless JWT login, in-memory vehicle CRUD, historical interest-rate
-CRUD, and broker quotes that call the interest-rate service. The calculator has no standalone HTTP
-endpoint. Customer CRUD remains planned work.
+Implemented behavior is stateless JWT login, in-memory customer and vehicle CRUD, historical
+interest-rate CRUD, and broker quotes that call the interest-rate service. The calculator has no
+standalone HTTP endpoint.
 
 ## Authentication API
 
@@ -54,6 +54,39 @@ server-side login session is created.
 
 Only login is anonymous. These demo credentials suit local assessment use, not production
 identity management. Use HTTPS before exposing either API outside a trusted local environment.
+
+## Customer API
+
+Customer routes require a bearer token. Only `BROKER` may create, read, fully replace, or delete
+customers.
+
+| Method | Route | Result |
+| --- | --- | --- |
+| `POST` | `/customers` | `201` with customer body and `Location` header |
+| `GET` | `/customers/{id}` | `200`, or `404` for an unknown UUID |
+| `GET` | `/customers?page=0&size=50` | Bounded page with `items`, `page`, `size`, and `total` |
+| `PUT` | `/customers/{id}` | Full replacement with `200`, or `404` |
+| `DELETE` | `/customers/{id}` | `204`, or `404` |
+
+Create or replace request:
+
+```json
+{
+  "name": "Ada Lovelace",
+  "street": "Analytical Engine Road",
+  "houseNumber": "12A",
+  "zipcode": "1011 AB",
+  "place": "Amsterdam",
+  "email": "ada@example.test",
+  "phoneNumber": "+31 6 12345678"
+}
+```
+
+All fields are required strings; `email` must be syntactically valid. House-number letters and
+phone-number spaces or plus signs are preserved. Invalid input returns `400` as ProblemDetail;
+there is no email-uniqueness or country-specific address/telephone formatting rule. List defaults
+are page `0`, size `50`; maximum size is `100`; results sort by UUID. Customers are in memory and
+are cleared on restart.
 
 ## Vehicle API
 

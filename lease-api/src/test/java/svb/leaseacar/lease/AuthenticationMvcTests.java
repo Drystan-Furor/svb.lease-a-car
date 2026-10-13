@@ -38,9 +38,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootTest(
     properties = {
@@ -54,8 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ContextConfiguration(
     classes = {
       LeaseApiApplication.class,
-      AuthenticationMvcTests.FixedClockConfiguration.class,
-      AuthenticationMvcTests.TestRoutes.class
+      AuthenticationMvcTests.FixedClockConfiguration.class
     })
 class AuthenticationMvcTests {
 
@@ -306,11 +303,4 @@ class AuthenticationMvcTests {
     }
   }
 
-  @RestController
-  static class TestRoutes {
-    @GetMapping("/customers")
-    String read() {
-      return "reached";
-    }
-  }
 }
