@@ -238,7 +238,8 @@ For local development with a JDK:
 ## Run with Docker Compose
 
 Compose requires one shared JWT secret and both demo accounts through environment variables.
-No working secret, password, or password hash is stored in Git. Generate local values:
+The `dev` profile below has intentionally insecure local-only values; Compose does not use them.
+Generate Compose values:
 
 ```sh
 export JWT_SECRET="$(openssl rand -base64 48)"
@@ -310,24 +311,30 @@ sh tests/e2e/docker-smoke.sh
 
 ## Run services locally
 
-To run without Docker, export the same required variables described above. Start each service in
-its own terminal with a local JDK; both terminals must inherit the same `JWT_SECRET`:
+Activate Spring profile `dev` to run without Docker or environment variables. It supplies a shared
+local JWT secret and two accounts: `broker` / `broker-password` and `employee` /
+`employee-password`. These credentials exist only for local development and must never be used
+outside it.
+
+In IntelliJ, add `dev` under **Active profiles** in each Spring Boot run configuration. From a
+terminal, start each service in its own terminal:
 
 ```sh
-./mvnw -pl lease-api spring-boot:run
+./mvnw -pl lease-api spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 ```sh
 ./mvnw -pl interest-rate-service spring-boot:run \
+  -Dspring-boot.run.profiles=dev \
   -Dspring-boot.run.arguments="--server.port=8081"
 ```
 
 `lease-api` listens on port `8080`; this local `interest-rate-service` command listens on port
 `8081`. Stop either service with `Ctrl+C`. Missing or invalid security configuration stops
-startup instead of falling back to a default credential.
+startup when profile `dev` is inactive instead of falling back to a default credential.
 
-`POST /auth/login`, vehicle CRUD, interest-rate CRUD, and broker quotes are available. Customer
-management remains planned.
+`POST /auth/login`, customer and vehicle CRUD, interest-rate CRUD, and broker quotes are
+available.
 
 ## Project layout
 

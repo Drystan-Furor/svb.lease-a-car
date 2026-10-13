@@ -1,0 +1,10 @@
+lease:
+  jwt:
+    secret: 0123456789012345678901234567890123456789012345678901234567890123
+  accounts:
+    broker:
+      username: broker
+      password-hash: $2a$10$daS54jI2gXPDDCVKzE8mQeYX6ukhWc3pWK3ZRcYLcxfQTwY4OBHzq
+    employee:
+      username: employee
+      password-hash: $2a$10$AvdnqJzImQU6hRmZd8DPt.ZJ4JNn78.QCs.5Yuzwmzf/uRMr87xiW
