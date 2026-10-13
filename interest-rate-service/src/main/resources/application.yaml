@@ -1,3 +1,9 @@
 spring:
   application:
     name: interest-rate-service
+
+lease:
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: ${JWT_ISSUER:lease-demo}
+    audience: ${JWT_AUDIENCE:lease-platform}

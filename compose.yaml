@@ -4,7 +4,14 @@ services:
       context: .
       target: lease-api
     environment:
+      BROKER_PASSWORD_HASH: ${BROKER_PASSWORD_HASH:?Set BROKER_PASSWORD_HASH}
+      BROKER_USERNAME: ${BROKER_USERNAME:?Set BROKER_USERNAME}
+      EMPLOYEE_PASSWORD_HASH: ${EMPLOYEE_PASSWORD_HASH:?Set EMPLOYEE_PASSWORD_HASH}
+      EMPLOYEE_USERNAME: ${EMPLOYEE_USERNAME:?Set EMPLOYEE_USERNAME}
       INTEREST_RATE_SERVICE_URL: http://interest-rate-service:8080
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-lease-platform}
+      JWT_ISSUER: ${JWT_ISSUER:-lease-demo}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
     ports:
       - "8080:8080"
 
@@ -12,5 +19,9 @@ services:
     build:
       context: .
       target: interest-rate-service
+    environment:
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-lease-platform}
+      JWT_ISSUER: ${JWT_ISSUER:-lease-demo}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
     ports:
       - "8081:8080"

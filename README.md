@@ -1,20 +1,58 @@
 # Lease-a-car API
 
-Lease-a-car is a Java 21 / Spring Boot 4 foundation for a two-service leasing API. It separates
-lease operations from interest-rate management so later stories can add authenticated REST
-resources and service-to-service quote retrieval without sharing data storage.
+Lease-a-car is a Java 21 / Spring Boot 4 two-service leasing API. It separates lease operations
+from interest-rate management. Both services validate the caller's identity on every request.
 
 ## Current scope
 
 Two independently buildable services exist:
 
-- `lease-api` owns lease calculations and will own customers, vehicles, login, and quotes.
+- `lease-api` owns login and lease calculations, and will own customers, vehicles, and quotes.
 - `interest-rate-service` will own dated interest rates.
 
-Both application contexts start successfully. The implemented business behavior is the
-monthly-rate calculation in `lease-api`; it has no HTTP endpoint yet. Authentication, CRUD
-resources, historical interest selection, and service-to-service calls are planned work, not
-current features.
+Implemented behavior is stateless JWT login plus the monthly-rate calculation in `lease-api`.
+The calculator has no HTTP endpoint yet. CRUD resources, historical interest selection, and
+service-to-service calls are planned work, not current features.
+
+## Authentication API
+
+`lease-api` exposes `POST /auth/login`. Supply one of the two configured demo accounts:
+
+```http
+POST /auth/login
+Content-Type: application/json
+
+{"username":"broker","password":"<your locally chosen broker password>"}
+```
+
+A successful login returns:
+
+```json
+{
+  "accessToken": "<jwt>",
+  "tokenType": "Bearer",
+  "expiresIn": 900
+}
+```
+
+Bad credentials return `401`. Send the token on every later request:
+
+```http
+Authorization: Bearer <jwt>
+```
+
+Tokens use HS256, issuer `lease-demo`, audience `lease-platform`, and expire after 15 minutes.
+Both services independently verify signature, issuer, audience, expiry, and not-before. Missing
+or invalid tokens return `401`; a valid identity without the required role returns `403`. No
+server-side login session is created.
+
+| Role | Allowed operations |
+| --- | --- |
+| `BROKER` | Manage customers, request quotes, read vehicles and interest rates |
+| `EMPLOYEE` | Manage vehicles and interest rates |
+
+Only login is anonymous. These demo credentials suit local assessment use, not production
+identity management. Use HTTPS before exposing either API outside a trusted local environment.
 
 ## Lease-rate calculation
 
@@ -66,6 +104,35 @@ For local development with a JDK:
 
 ## Run with Docker Compose
 
+Compose requires one shared JWT secret and both demo accounts through environment variables.
+No working secret, password, or password hash is stored in Git. Generate local values:
+
+```sh
+export JWT_SECRET="$(openssl rand -base64 48)"
+export BROKER_USERNAME=broker
+export EMPLOYEE_USERNAME=employee
+```
+
+Generate each BCrypt hash without placing its password on the command line. The command prompts
+twice and prints `<username>:<hash>`; copy only the hash after the colon:
+
+```sh
+docker run --rm -it httpd:2.4-alpine htpasswd -nBC 12 broker
+docker run --rm -it httpd:2.4-alpine htpasswd -nBC 12 employee
+```
+
+Export the two generated hashes. Single quotes preserve the `$` characters:
+
+```sh
+export BROKER_PASSWORD_HASH='<paste broker BCrypt hash>'
+export EMPLOYEE_PASSWORD_HASH='<paste employee BCrypt hash>'
+```
+
+Compose refuses to build or start when one of these five variables is absent. The application
+also stops on a secret shorter than 32 UTF-8 bytes, malformed BCrypt hashes, blank usernames, or
+duplicate usernames. Optional `JWT_ISSUER` and `JWT_AUDIENCE` variables override the documented
+defaults, but both containers must receive matching values.
+
 Build both images from source without a local JDK or Maven installation:
 
 ```sh
@@ -83,6 +150,14 @@ docker compose ps
 `8081`. Inside Compose, `lease-api` receives
 `INTEREST_RATE_SERVICE_URL=http://interest-rate-service:8080`. This uses the Compose service
 name and container port—not `localhost` or host port `8081`.
+
+Log in after startup:
+
+```sh
+curl --request POST http://localhost:8080/auth/login \
+  --header 'Content-Type: application/json' \
+  --data '{"username":"broker","password":"<your broker password>"}'
+```
 
 Stop services and remove their temporary containers:
 
@@ -102,7 +177,8 @@ sh tests/e2e/docker-smoke.sh
 
 ## Run services locally
 
-To run without Docker, start each service in its own terminal with a local JDK:
+To run without Docker, export the same required variables described above. Start each service in
+its own terminal with a local JDK; both terminals must inherit the same `JWT_SECRET`:
 
 ```sh
 ./mvnw -pl lease-api spring-boot:run
@@ -114,10 +190,11 @@ To run without Docker, start each service in its own terminal with a local JDK:
 ```
 
 `lease-api` listens on port `8080`; this local `interest-rate-service` command listens on port
-`8081`. Stop either service with `Ctrl+C`.
+`8081`. Stop either service with `Ctrl+C`. Missing or invalid security configuration stops
+startup instead of falling back to a default credential.
 
-Neither service exposes business REST endpoints in this revision. Starting them proves their
-independent application configuration only.
+No business REST resource is exposed in this revision. `POST /auth/login` is available; valid
+bearer tokens already protect the planned route families in both services.
 
 ## Project layout
 

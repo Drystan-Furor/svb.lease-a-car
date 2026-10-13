@@ -1,3 +1,16 @@
 spring:
   application:
     name: lease-api
+
+lease:
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: ${JWT_ISSUER:lease-demo}
+    audience: ${JWT_AUDIENCE:lease-platform}
+  accounts:
+    broker:
+      username: ${BROKER_USERNAME}
+      password-hash: ${BROKER_PASSWORD_HASH}
+    employee:
+      username: ${EMPLOYEE_USERNAME}
+      password-hash: ${EMPLOYEE_PASSWORD_HASH}
