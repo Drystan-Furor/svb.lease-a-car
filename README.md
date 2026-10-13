@@ -63,28 +63,33 @@ export BROKER_USERNAME=broker
 export EMPLOYEE_USERNAME=employee
 ```
 
-Generate password hashes:
+Generate and export password hashes automatically. These commands use the
+development passwords shown above and are intended for trusted local use:
 
 ```bash
-docker run --rm -it httpd:2.4-alpine htpasswd -nBC 12 broker
-docker run --rm -it httpd:2.4-alpine htpasswd -nBC 12 employee
-```
-> broker-password
-> employee-password
-
-
-Copy each generated hash (without the username prefix):
-
-```bash
-export BROKER_PASSWORD_HASH='<broker hash>'
-export EMPLOYEE_PASSWORD_HASH='<employee hash>'
+export BROKER_PASSWORD_HASH="$(docker run --rm httpd:2.4-alpine \
+  htpasswd -bnBC 12 '' broker-password | tr -d ':\r\n')"
+export EMPLOYEE_PASSWORD_HASH="$(docker run --rm httpd:2.4-alpine \
+  htpasswd -bnBC 12 '' employee-password | tr -d ':\r\n')"
 ```
 
-Start both services:
+Run all commands in the same terminal so Docker Compose receives the exported
+values. Each hash must be a 60-character BCrypt value beginning with `$2`.
+Do not export placeholder text such as `<broker hash>` or include a username
+prefix. When copying a hash manually, use single quotes to preserve `$` characters.
+
+Start both services, then check their status and startup logs:
 
 ```bash
 docker compose up --build -d
+docker compose ps -a
+docker compose logs --tail=50 lease-api interest-rate-service
 ```
+
+Docker's `Started` message only means the container was launched. If the logs
+show `Demo account configuration is invalid`, regenerate both hashes above
+and run `docker compose up -d --force-recreate lease-api` in the same terminal.
+Restarting an existing container does not update its environment variables.
 
 Stop:
 
@@ -102,7 +107,8 @@ curl -X POST http://localhost:8080/auth/login \
   -d '{"username":"broker","password":"broker-password"}'
 ```
 
-The example uses the local `dev` profile credentials.
+The example uses the credentials from the local `dev` profile and the Docker
+commands above.
 
 A successful response contains a JWT access token.
 
