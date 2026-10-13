@@ -7,13 +7,13 @@ from interest-rate management. Both services validate the caller's identity on e
 
 Two independently buildable services exist:
 
-- `lease-api` owns login, vehicle management, and lease calculations, and will own customers and
-  quotes.
+- `lease-api` owns login, vehicle management, lease calculations, and quotes. It will own
+  customers.
 - `interest-rate-service` will own dated interest rates.
 
 Implemented behavior is stateless JWT login, in-memory vehicle CRUD, historical interest-rate
-CRUD, and the monthly-rate calculation in `lease-api`. The calculator has no HTTP endpoint yet.
-Customer CRUD, quotes, and service-to-service calls are planned work, not current features.
+CRUD, and broker quotes that call the interest-rate service. The calculator has no standalone HTTP
+endpoint. Customer CRUD remains planned work.
 
 ## Authentication API
 
@@ -121,6 +121,35 @@ Each startup reloads the 20 supplied historical rates into memory. For example, 
 `2015-02-04`, `2015-02-05`, and `2015-02-19` return 1.25, -0.75, and 1 percent. Dates before
 `2014-05-01` return `404`; `4.35` percent applies from `2019-08-15` until a newer rate is added.
 Manual changes disappear at restart.
+
+## Lease-quote API
+
+`BROKER` may request a quote from `lease-api`. `EMPLOYEE` receives `403`. The request carries
+only contract input. Lease-api reads the vehicle's net price itself and forwards the same bearer
+token to `interest-rate-service` to select historical interest.
+
+```http
+POST /lease-quotes
+Authorization: Bearer <broker token>
+Content-Type: application/json
+
+{
+  "vehicleId": "123e4567-e89b-12d3-a456-426614174000",
+  "mileage": 45000,
+  "duration": 60,
+  "startDate": "2019-08-15"
+}
+```
+
+Successful response contains the supplied contract input, selected rate and rate date, source net
+price, calculated `monthlyRate`, and `currency` `EUR`. A vehicle with net price 63000, 45000
+annual kilometres, 60 months, and start date 2019-08-15 returns 231.95 EUR at 4.35 percent.
+
+`vehicleId`, positive `mileage`, positive `duration`, and ISO `startDate` are required. An unknown
+vehicle returns `404`; invalid input returns `400`. No historical rate maps to `422`. An unreachable
+or timed-out interest-rate service returns `503`. A rejected token or malformed downstream response
+returns `502`. Lease-api never retries, caches, falls back to another rate, or accepts a client
+price or interest-rate override.
 
 ## Lease-rate calculation
 
@@ -261,13 +290,13 @@ its own terminal with a local JDK; both terminals must inherit the same `JWT_SEC
 `8081`. Stop either service with `Ctrl+C`. Missing or invalid security configuration stops
 startup instead of falling back to a default credential.
 
-`POST /auth/login`, vehicle CRUD, and interest-rate CRUD are available. Other business resources
-remain planned.
+`POST /auth/login`, vehicle CRUD, interest-rate CRUD, and broker quotes are available. Customer
+management remains planned.
 
 ## Project layout
 
 ```text
-lease-api/                 Login, vehicle management, and lease calculator
+lease-api/                 Login, vehicles, quotes, and lease calculator
 interest-rate-service/     Historical interest-rate service module
 Dockerfile                 Java 21 verification build stage
 assesment/docs/            Assessment, implementation plan, decisions

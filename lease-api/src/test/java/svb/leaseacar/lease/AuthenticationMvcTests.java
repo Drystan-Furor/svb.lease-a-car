@@ -181,9 +181,19 @@ class AuthenticationMvcTests {
         .andExpect(status().isOk());
     mockMvc.perform(get("/customers").header("Authorization", bearer(employee)))
         .andExpect(status().isForbidden());
-    mockMvc.perform(get("/lease-quotes").header("Authorization", bearer(broker)))
-        .andExpect(status().isOk());
-    mockMvc.perform(get("/lease-quotes").header("Authorization", bearer(employee)))
+    mockMvc
+        .perform(
+            post("/lease-quotes")
+                .header("Authorization", bearer(broker))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+        .andExpect(status().isBadRequest());
+    mockMvc
+        .perform(
+            post("/lease-quotes")
+                .header("Authorization", bearer(employee))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
         .andExpect(status().isForbidden());
     mockMvc.perform(get("/vehicles").header("Authorization", bearer(broker)))
         .andExpect(status().isOk());
@@ -298,7 +308,7 @@ class AuthenticationMvcTests {
 
   @RestController
   static class TestRoutes {
-    @GetMapping({"/customers", "/lease-quotes"})
+    @GetMapping("/customers")
     String read() {
       return "reached";
     }

@@ -35,9 +35,13 @@ class ApiExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  ProblemDetail invalidVehicle(MethodArgumentNotValidException exception) {
+  ProblemDetail invalidInput(MethodArgumentNotValidException exception) {
+    String detail =
+        exception.getBindingResult().getTarget() instanceof LeaseQuoteRequest
+            ? "Quote input is invalid"
+            : "Vehicle input is invalid";
     ProblemDetail problem =
-        ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Vehicle input is invalid");
+        ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
     problem.setTitle("Invalid request");
     Map<String, String> errors = new LinkedHashMap<>();
     exception

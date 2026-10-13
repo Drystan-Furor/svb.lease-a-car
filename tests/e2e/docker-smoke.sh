@@ -75,7 +75,7 @@ assert_services_ready() {
     curl --fail --silent --show-error \
       --header "Authorization: Bearer ${employee_token}" \
       --header 'Content-Type: application/json' \
-      --data '{"make":"Volvo","model":"XC40","version":"Recharge","numberOfDoors":5,"co2Emission":null,"grossPrice":52000,"nettPrice":43000}' \
+      --data '{"make":"Volvo","model":"XC40","version":"Recharge","numberOfDoors":5,"co2Emission":null,"grossPrice":70000,"nettPrice":63000}' \
       http://localhost:8080/vehicles
   )"
   vehicle_id="$(
@@ -94,6 +94,18 @@ assert_services_ready() {
       --header "Authorization: Bearer ${access_token}" \
       "http://localhost:8080/vehicles/${vehicle_id}"
   )" = "403"
+
+  quote_response="$(
+    curl --fail --silent --show-error \
+      --header "Authorization: Bearer ${access_token}" \
+      --header 'Content-Type: application/json' \
+      --data "{\"vehicleId\":\"${vehicle_id}\",\"mileage\":45000,\"duration\":60,\"startDate\":\"2019-08-15\"}" \
+      http://localhost:8080/lease-quotes
+  )"
+  printf '%s\n' "$quote_response" | grep -q '"monthlyRate":231.95'
+  printf '%s\n' "$quote_response" | grep -q '"interestRate":4.35'
+  printf '%s\n' "$quote_response" | grep -q '"interestRateStartDate":"2019-08-15"'
+
   test "$(
     curl --silent --output /dev/null --write-out '%{http_code}' \
       --request DELETE \
