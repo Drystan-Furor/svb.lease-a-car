@@ -6,7 +6,7 @@ customers, vehicles, and historical interest rates.
 The application consists of two independent services secured with JWT.
 
 For a complete manual assessment workflow with curl commands and expected results,
-see [test-run.md](test-run.md).
+see [test-run.md](assesment/docs/test-run.md).
 
 ## Quick Start
 
