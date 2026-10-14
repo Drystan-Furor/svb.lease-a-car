@@ -16,13 +16,25 @@ class BacklogContractTests(unittest.TestCase):
         cls.backlog = BACKLOG.read_text(encoding="utf-8")
 
     def test_completed_delivery_stories_have_visible_done_pills(self):
-        completed_ids = [*(f"S{number:02}" for number in range(1, 12)), "B01", "B02"]
+        completed_ids = [*(f"S{number:02}" for number in range(1, 12)), "B01", "B03"]
 
         for story_id in completed_ids:
             with self.subTest(story_id=story_id):
                 self.assertIn(
                     f'data-completed-id="{story_id}">done</span>', self.backlog
                 )
+
+    def test_each_story_has_at_most_one_done_pill(self):
+        stories = re.findall(
+            r'<details id="[^"]+"[^>]*data-story[^>]*>.*?</details>',
+            self.backlog,
+            re.DOTALL,
+        )
+
+        for story in stories:
+            story_id = re.search(r'<details id="([^"]+)"', story).group(1)
+            with self.subTest(story_id=story_id):
+                self.assertLessEqual(story.count('class="done-pill"'), 1)
 
     def test_developer_follow_up_contains_ten_sdd_tdd_stories(self):
         section = self.backlog.split('<section id="developer-follow-up">', 1)[1]
