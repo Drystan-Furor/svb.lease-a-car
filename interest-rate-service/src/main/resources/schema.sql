@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS interest_rates (
+  id UUID PRIMARY KEY,
+  interest_rate DECIMAL(19, 6) NOT NULL,
+  start_date DATE NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS seed_state (
+  seed_name VARCHAR(64) PRIMARY KEY,
+  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);

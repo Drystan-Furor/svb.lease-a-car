@@ -9,22 +9,28 @@ services:
       EMPLOYEE_PASSWORD_HASH: ${EMPLOYEE_PASSWORD_HASH:?Set EMPLOYEE_PASSWORD_HASH}
       EMPLOYEE_USERNAME: ${EMPLOYEE_USERNAME:?Set EMPLOYEE_USERNAME}
       INTEREST_RATE_SERVICE_URL: http://interest-rate-service:8080
+      DATABASE_URL: jdbc:h2:file:/data/lease-api;DB_CLOSE_ON_EXIT=FALSE
       JWT_AUDIENCE: ${JWT_AUDIENCE:-lease-platform}
       JWT_ISSUER: ${JWT_ISSUER:-lease-demo}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
     ports:
-      - "8080:8080"
+      - "${LEASE_API_PORT:-8080}:8080"
+    volumes:
+      - lease-api-data:/data
 
   interest-rate-service:
     build:
       context: .
       target: interest-rate-service
     environment:
+      DATABASE_URL: jdbc:h2:file:/data/interest-rates;DB_CLOSE_ON_EXIT=FALSE
       JWT_AUDIENCE: ${JWT_AUDIENCE:-lease-platform}
       JWT_ISSUER: ${JWT_ISSUER:-lease-demo}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
     ports:
-      - "8081:8080"
+      - "${INTEREST_RATE_PORT:-8081}:8080"
+    volumes:
+      - interest-rate-data:/data
 
   dashboard:
     build:
@@ -35,4 +41,8 @@ services:
       interest-rate-service:
         condition: service_started
     ports:
-      - "8082:8080"
+      - "${DASHBOARD_PORT:-8082}:8080"
+
+volumes:
+  lease-api-data:
+  interest-rate-data:

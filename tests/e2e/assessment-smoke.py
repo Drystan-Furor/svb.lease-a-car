@@ -7,8 +7,13 @@ import time
 import urllib.error
 import urllib.request
 
+LEASE_API_PORT = int(os.environ.get("LEASE_API_PORT", "8080"))
+INTEREST_RATE_PORT = int(os.environ.get("INTEREST_RATE_PORT", "8081"))
+DASHBOARD_PORT = int(os.environ.get("DASHBOARD_PORT", "8082"))
 
-def request(method, path, expected=200, token=None, body=None, port=8080):
+
+def request(method, path, expected=200, token=None, body=None, port=None):
+    port = LEASE_API_PORT if port is None else port
     headers = {"Content-Type": "application/json"}
     if token:
         headers["Authorization"] = "Bearer " + token
@@ -40,13 +45,15 @@ def ready(port):
 def dashboard_ready():
     for attempt in range(60):
         try:
-            with urllib.request.urlopen("http://localhost:8082/", timeout=10) as response:
+            with urllib.request.urlopen(
+                f"http://localhost:{DASHBOARD_PORT}/", timeout=10
+            ) as response:
                 page = response.read().decode()
                 assert response.status == 200 and "API-testdashboard" in page
                 return
         except (OSError, AssertionError):
             time.sleep(1)
-    raise AssertionError("Dashboard on port 8082 not ready")
+    raise AssertionError(f"Dashboard on port {DASHBOARD_PORT} not ready")
 
 
 def compose(*args):
@@ -61,7 +68,7 @@ def login(role):
     return result["accessToken"]
 
 
-def create_and_update(path, body, token, field, value, port=8080):
+def create_and_update(path, body, token, field, value, port=None):
     created = request("POST", path, 201, token, body, port)
     url = path + "/" + created["id"]
     assert all(created[key] == val for key, val in body.items())
@@ -75,17 +82,17 @@ def create_and_update(path, body, token, field, value, port=8080):
     return created["id"]
 
 
-for service_port in (8080, 8081):
+for service_port in (LEASE_API_PORT, INTEREST_RATE_PORT):
     ready(service_port)
 dashboard_ready()
-request("GET", "/lease-api/customers", 401, port=8082)
-request("GET", "/interest-api/interest-rates", 401, port=8082)
+request("GET", "/lease-api/customers", 401, port=DASHBOARD_PORT)
+request("GET", "/interest-api/interest-rates", 401, port=DASHBOARD_PORT)
 broker = login("broker")
 employee = login("employee")
 request("POST", "/auth/login", 401, body={"username": "broker", "password": "wrong"})
 assert request("GET", "/customers", token=broker)["total"] == 0
 assert request("GET", "/vehicles", token=broker)["total"] == 10329
-assert request("GET", "/interest-rates", token=broker, port=8081)["total"] == 20
+assert request("GET", "/interest-rates", token=broker, port=INTEREST_RATE_PORT)["total"] == 20
 
 customer = create_and_update("/customers", {
     "name": "Ada Lovelace", "street": "Analytical Engine Road", "houseNumber": "12A",
@@ -99,11 +106,20 @@ vehicle_body = {
 }
 vehicle = create_and_update("/vehicles", vehicle_body, employee, "version", "Demo")
 request("POST", "/vehicles", 403, broker, vehicle_body)
+seed_vehicle = next(
+    item["id"]
+    for item in request("GET", "/vehicles?page=0&size=2", token=employee)["items"]
+    if item["id"] != vehicle
+)
+request("DELETE", "/vehicles/" + seed_vehicle, 204, employee)
 rate = create_and_update("/interest-rates", {
     "interestRate": 4.4, "startDate": "2030-01-01"
-}, employee, "interestRate", 4.5, 8081)
-request("DELETE", "/interest-rates/" + rate, 403, broker, port=8081)
-effective = request("GET", "/interest-rates/effective?date=2030-01-01", token=broker, port=8081)
+}, employee, "interestRate", 4.5, INTEREST_RATE_PORT)
+request("DELETE", "/interest-rates/" + rate, 403, broker, port=INTEREST_RATE_PORT)
+effective = request(
+    "GET", "/interest-rates/effective?date=2030-01-01",
+    token=broker, port=INTEREST_RATE_PORT
+)
 assert effective["id"] == rate and effective["interestRate"] == 4.5
 quote_body = {"vehicleId": vehicle, "mileage": 45000, "duration": 60, "startDate": "2030-01-01"}
 quote = request("POST", "/lease-quotes", token=broker, body=quote_body)
@@ -117,17 +133,27 @@ try:
     assert failure["status"] == 503 and "monthlyRate" not in failure
 finally:
     compose("start", "interest-rate-service")
-ready(8081)
-# Restart restores fixtures and discards the temporary rate.
-request("GET", "/interest-rates/" + rate, 404, broker, port=8081)
-rate = request("POST", "/interest-rates", 201, employee, {
-    "interestRate": 4.5, "startDate": "2030-01-01"
-}, 8081)["id"]
+ready(INTEREST_RATE_PORT)
+assert request(
+    "GET", "/interest-rates/" + rate, token=broker, port=INTEREST_RATE_PORT
+)["interestRate"] == 4.5
+
+# Recreate both application containers while retaining their named volumes.
+compose("up", "-d", "--force-recreate", "lease-api", "interest-rate-service")
+ready(LEASE_API_PORT)
+ready(INTEREST_RATE_PORT)
+assert request("GET", "/customers/" + customer, token=broker)["name"] == "Ada Byron"
+assert request("GET", "/vehicles/" + vehicle, token=employee)["version"] == "Demo"
+request("GET", "/vehicles/" + seed_vehicle, 404, employee)
+assert request("GET", "/vehicles", token=employee)["total"] == 10329
+assert request(
+    "GET", "/interest-rates/" + rate, token=broker, port=INTEREST_RATE_PORT
+)["interestRate"] == 4.5
 for path, record, token, port in (
-    ("/customers", customer, broker, 8080),
-    ("/vehicles", vehicle, employee, 8080),
-    ("/interest-rates", rate, employee, 8081),
+    ("/customers", customer, broker, LEASE_API_PORT),
+    ("/vehicles", vehicle, employee, LEASE_API_PORT),
+    ("/interest-rates", rate, employee, INTEREST_RATE_PORT),
 ):
     request("DELETE", path + "/" + record, 204, token, port=port)
     request("GET", path + "/" + record, 404, token, port=port)
-print("PASS: fixtures, login, CRUD, EUR 239.82 quote, 401, 403, 503 and reset", flush=True)
+print("PASS: fixtures, login, CRUD, EUR 239.82 quote, 401, 403, 503 and persistence", flush=True)

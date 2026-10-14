@@ -33,3 +33,6 @@ build/
 .vscode/
 
 .DS_Store
+
+# Local H2 file databases
+**/data/

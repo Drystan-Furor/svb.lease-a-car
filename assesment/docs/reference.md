@@ -389,7 +389,7 @@ The assessment script:
 - Validates lease calculations
 - Tests authorization failures
 - Tests downstream service failures
-- Restarts services and verifies data reset behavior
+- Recreates both application containers and verifies retained IDs, updates, and deletions
 - Cleans up temporary containers and networks
 
 The assessment uses an isolated Compose project named
@@ -419,6 +419,20 @@ The Lease API communicates with the Interest Rate Service
 using the internal Compose service name.
 
 The external host port is 8081.
+
+### Persistent Data
+
+Each application service uses its own H2 file database. Local runs write below
+the module's `./data/` directory. Compose mounts separate named volumes at
+`/data`, so `docker compose down` and container recreation retain data.
+
+Seed CSV files are imported only for a fresh database. A persisted seed marker
+prevents deleted seed records from returning after restart. No HTTP reset exists.
+Reset both Compose databases only with:
+
+```bash
+docker compose down -v
+```
 
 ### Local Development
 

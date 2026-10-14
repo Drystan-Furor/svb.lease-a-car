@@ -85,13 +85,13 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 **Toets en teruglink.** [S02](backlog.html#S02), [S09](backlog.html#S09): minimale build met JDK 21 in Docker, beide services startbaar. Bron: [analyse](analyze.md) en bestaande projectbasis.
 
 <a id="k04"></a>
-### K04 · Opslag in geheugen
+### K04 · Duurzame opslag per service
 
-**Keuze.** Kleine concrete repositories met `ConcurrentHashMap` en gegenereerde UUID's. Voor rente bewaakt één gesynchroniseerde schrijfoperatie unieke ingangsdatums; lezen selecteert de laatste toepasselijke datum.
+**Keuze.** Kleine concrete JDBC-repositories met gegenereerde UUID's en één H2-database in file-mode per service. Een unieke databaseconstraint bewaakt rentedatums; lezen selecteert de laatste toepasselijke datum. Compose koppelt aan elke service een eigen named volume.
 
-**Waarom.** De opdracht staat dit toe. Geen databaseconfiguratie, migrations of ORM. De kleine dataset vraagt geen indexontwerp.
+**Waarom.** Dit is de kleinste duurzame invulling van B03. JDBC en expliciet SQL behouden het bestaande domein- en API-contract zonder ORM of gedeelde database.
 
-**Afweging.** Handmatige wijzigingen verdwijnen bij herstart; meegeleverde demo-data wordt opnieuw geladen. Geen horizontale schaalbaarheid of duurzaam geheugen. Vermeld dit in README en demo. Geen database-interface vooraf bouwen voor een bonus die mogelijk vervalt.
+**Afweging.** Schema-initialisatie gebruikt idempotent `schema.sql`; een aparte migratietool is voor deze lokale assessment niet nodig. H2 file-mode is niet bedoeld voor meerdere gelijktijdige service-instances. Lokale bestanden staan onder `./data/`; Compose-data blijft in named volumes. Er is geen reset-endpoint: alleen `docker compose down -v` wist beide volumes.
 
 **Toets en teruglink.** [S04](backlog.html#S04), [S05](backlog.html#S05), [S08](backlog.html#S08), [B03](backlog.html#B03). Bron: [opdracht](assessment.md), [analyse](analyze.md).
 
@@ -185,11 +185,11 @@ JSON gebruikt decimale punten en ISO-datums; alleen de CSV-adapter leest Nederla
 <a id="k12"></a>
 ### K12 · Reproduceerbare CSV-import zonder dataverlies
 
-**Keuze.** Laad de twee bestanden bij opstarten van een leeg demo-repository. Gebruik Commons CSV met puntkomma, quotes en headers. Voertuigen lezen als Windows-1252; rentedata als UTF-8. Decimale komma omzetten naar punt; datums strikt als `d-M-uuuu` lezen. Trim omringende witruimte. Mapping: `#doors` → `numberOfDoors`, `gross_price` → `grossPrice`, `nett_price` → `nettPrice`; rente `interestrate` → `interestRate`, `startdate` → `startDate`.
+**Keuze.** Laad de twee bestanden één keer bij initialisatie van een nieuwe database. Een persistente seed-marker voorkomt herimport, ook nadat alle seedrecords zijn verwijderd. Gebruik Commons CSV met puntkomma, quotes en headers. Voertuigen lezen als Windows-1252; rentedata als UTF-8. Decimale komma omzetten naar punt; datums strikt als `d-M-uuuu` lezen. Trim omringende witruimte. Mapping: `#doors` → `numberOfDoors`, `gross_price` → `grossPrice`, `nett_price` → `nettPrice`; rente `interestrate` → `interestRate`, `startdate` → `startDate`.
 
 **Waarom.** Dit importeert de aangeleverde data zonder handmatige opschoning of stil verlies. UUID per voertuigrij voorkomt overschrijven van gelijknamige of identieke versies.
 
-**Afweging.** Behoud alle 10.329 voertuigregels, inclusief 320 identieke extra rijen. Geen bewezen businesssleutel om veilig te dedupliceren. Negeer alleen de bekende extra kolom `hp`. Ontbrekende vereiste headers of ongeldige waarden stoppen import met bestand en rijnummer. Parse en valideer alles vóór publicatie in geheugen. Herhaald initialiseren van dezelfde reeds geladen repository voegt niets toe; na herstart zijn seeddata terug, maar ID's mogen veranderen. Bestanden moeten in de gebouwde applicaties beschikbaar zijn, onafhankelijk van de werkdirectory.
+**Afweging.** Behoud alle 10.329 voertuigregels, inclusief 320 identieke extra rijen. Geen bewezen businesssleutel om veilig te dedupliceren. Negeer alleen de bekende extra kolom `hp`. Ontbrekende vereiste headers of ongeldige waarden stoppen import met bestand en rijnummer. Import en seed-marker staan in één transactie. Na herstart blijven IDs en verwijderingen behouden. Bestanden moeten in de gebouwde applicaties beschikbaar zijn, onafhankelijk van de werkdirectory.
 
 **Toets en teruglink.** [S09](backlog.html#S09): exact 10.329 voertuigen en 20 tarieven, 0 verloren duplicaten, accenten behouden, foutieve rij geen gedeeltelijke import. Bron: beide CSV-bestanden.
 
@@ -293,7 +293,7 @@ docker compose down
 
 **Afweging.** Pin JDK-/JRE-basisimages op een expliciete versie en multi-architectuurmanifestdigest; leg ook de Wrapperversie vast. De gekozen basisimages ondersteunen de gebruikte Linux-architectuur. Bouw voor de architectuur van de Dockerhost; forceer niet ongemerkt één CPU-platform. Downloads bij de eerste build vragen netwerktoegang. Gepinde toolchains verminderen verschillen, maar garanderen zonder extra maatregelen geen byte-identieke JARs; dat is hier geen eis. Kubernetes, een registry en deploymentautomatisering zijn niet nodig voor deze lokale assessmentdemo.
 
-Compose gebruikt de servicenaam voor interne HTTP-aanroepen. Poorten, demo-accounts en JWT-secret zijn runtimeconfiguratie; werkende secrets komen niet in images of Git. Data in geheugen blijft tijdelijk: Docker verandert K04 niet. Alleen de aparte opslagbonus krijgt named volumes. Start-/stopcommando's, configuratievoorbeeld en werkelijk geteste host-/CPU-combinaties komen in README.
+Compose gebruikt de servicenaam voor interne HTTP-aanroepen. Poorten, demo-accounts en JWT-secret zijn runtimeconfiguratie; werkende secrets komen niet in images of Git. Elke applicatieservice heeft een eigen named volume onder `/data`; `docker compose down` behoudt data en uitsluitend `docker compose down -v` reset beide databases. Start-/stopcommando's, configuratievoorbeeld en werkelijk geteste host-/CPU-combinaties komen in README.
 
 **Toets en teruglink.** [S02](backlog.html#S02): de containerbuild slaagt zonder host-JDK en faalt bij een falende test. [S11](backlog.html#S11): twee images uit schone broncode, beide containers startbaar. [S10](backlog.html#S10): login, beheer en quote werken vanaf dezelfde Git-commit in een tweede schone Dockeromgeving, bijvoorbeeld een Linux-runner of een andere computer. Noteer omgeving, commit en testresultaat; zonder die proef is overdraagbaarheid nog niet bewezen. Bron: expliciet gebruikersverzoek om buiten de eigen machine te kunnen bouwen en draaien.
 

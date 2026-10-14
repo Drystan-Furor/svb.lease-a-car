@@ -15,7 +15,7 @@ class InterestRateCsvImporterTests {
 
   @Test
   void importsProvidedRatesWithDecimalCommasAndStrictDates() throws Exception {
-    InterestRateRepository repository = new InterestRateRepository();
+    InterestRateRepository repository = InterestRateRepositoryTestFactory.create();
 
     try (var source = new ClassPathResource("interest-rates.csv").getInputStream()) {
       importer.importInto(source, repository);
@@ -28,7 +28,7 @@ class InterestRateCsvImporterTests {
 
   @Test
   void rejectsInvalidDatesAndMissingHeadersWithoutPublishingAnyData() {
-    InterestRateRepository repository = new InterestRateRepository();
+    InterestRateRepository repository = InterestRateRepositoryTestFactory.create();
     String invalidDate = "interestrate;startdate\n-0,75;31-2-2015\n";
 
     assertThatThrownBy(
@@ -45,7 +45,7 @@ class InterestRateCsvImporterTests {
 
   @Test
   void doesNotImportAgainWhenRepositoryAlreadyContainsDemoData() {
-    InterestRateRepository repository = new InterestRateRepository();
+    InterestRateRepository repository = InterestRateRepositoryTestFactory.create();
     String csv = "interestrate;startdate\n0,25;27-6-2014\n";
 
     importer.importInto(utf8(csv), repository);

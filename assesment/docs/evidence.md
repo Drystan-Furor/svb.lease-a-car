@@ -26,9 +26,9 @@ selection, and the calculator's precision and rounding.
 
 ### Known limits
 
-Storage is temporary. Restarting either service discards its manual changes and restores its
-packaged fixtures; customers restart empty. Vehicle and rate IDs must be obtained from API
-responses, not copied between runs. Quote results are not persisted. Authentication uses two
-configured demo accounts and a shared signing secret; there is no account administration,
-refresh-token or revocation flow. Swagger and durable storage are separate bonus stories.
+Each service uses one local H2 file database and is not intended for concurrent multi-instance
+deployment. Compose data persists until `docker compose down -v`; no HTTP reset exists. Quote
+results are not persisted. Authentication uses two configured demo accounts and a shared signing
+secret; there is no account administration, refresh-token or revocation flow. Swagger and durable
+storage are implemented bonus stories.
 The literal formula yields EUR 239.82 for the assignment inputs, as documented above.

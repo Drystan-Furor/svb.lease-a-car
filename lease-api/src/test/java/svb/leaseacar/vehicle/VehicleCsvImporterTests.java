@@ -15,7 +15,7 @@ class VehicleCsvImporterTests {
 
   @Test
   void importsEveryProvidedVehicleWithoutLosingDuplicates() throws Exception {
-    VehicleRepository repository = new VehicleRepository();
+    VehicleRepository repository = VehicleRepositoryTestFactory.create();
 
     try (var source = new ClassPathResource("vehicles.csv").getInputStream()) {
       importer.importInto(source, repository);
@@ -26,7 +26,7 @@ class VehicleCsvImporterTests {
 
   @Test
   void preservesQuotedAccentedValuesAndDecimalCommasWithoutInventingCo2() {
-    VehicleRepository repository = new VehicleRepository();
+    VehicleRepository repository = VehicleRepositoryTestFactory.create();
     String csv =
         """
         make;model;version;#doors;gross_price;nett_price;hp
@@ -45,7 +45,7 @@ class VehicleCsvImporterTests {
 
   @Test
   void rejectsCorruptRowsAndMissingHeadersWithoutPublishingAnyData() {
-    VehicleRepository repository = new VehicleRepository();
+    VehicleRepository repository = VehicleRepositoryTestFactory.create();
     String corrupt =
         """
         make;model;version;#doors;gross_price;nett_price;hp
@@ -69,7 +69,7 @@ class VehicleCsvImporterTests {
 
   @Test
   void doesNotImportAgainWhenRepositoryAlreadyContainsDemoData() {
-    VehicleRepository repository = new VehicleRepository();
+    VehicleRepository repository = VehicleRepositoryTestFactory.create();
     String csv =
         "make;model;version;#doors;gross_price;nett_price;hp\nVolvo;XC40;Recharge;5;52000;43000;231\n";
 

@@ -21,10 +21,13 @@ EMPLOYEE_PASSWORD_HASH="$(
 
 # Separate Compose resources from a developer's running project.
 export COMPOSE_PROJECT_NAME=lease-assessment-smoke
+export LEASE_API_PORT=18080
+export INTEREST_RATE_PORT=18081
+export DASHBOARD_PORT=18082
 cleanup() {
   result=$?
   trap - EXIT
-  docker compose down --volumes --remove-orphans || result=1
+  docker compose down -v --remove-orphans || result=1
   exit "$result"
 }
 trap cleanup EXIT
@@ -44,7 +47,4 @@ test "$(docker compose exec -T lease-api id -u)" -ne 0
 test "$(docker compose exec -T interest-rate-service id -u)" -ne 0
 docker compose exec -T lease-api printenv INTEREST_RATE_SERVICE_URL \
   | grep -qx 'http://interest-rate-service:8080'
-docker compose down
-docker compose up -d
-python3 tests/e2e/assessment-smoke.py
-printf 'PASS: complete assessment demo, including container recreation\n'
+printf 'PASS: complete assessment demo, persistence, and container recreation\n'

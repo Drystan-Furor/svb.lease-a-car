@@ -107,6 +107,13 @@ Stop:
 docker compose down
 ```
 
+This keeps both named database volumes. To reset all application data and load
+the supplied seed data again, use the only supported reset procedure:
+
+```bash
+docker compose down -v
+```
+
 ### Verify the API
 
 Authenticate:
@@ -205,12 +212,21 @@ All other endpoints belong to the Lease API.
 
 ### Data Storage
 
-The application uses in-memory storage.
+Each service uses its own H2 file database.
 
-- Customer data is cleared on restart.
-- Vehicle data is reloaded from the supplied CSV.
-- Historical interest rates are reloaded from the supplied CSV.
-- Manual changes are not persisted.
+- Local runs store files below that module's `./data/` directory.
+- Docker Compose stores Lease API and Interest Rate Service data in separate
+  named volumes mounted at `/data`.
+- Created, changed, and deleted records survive application and container
+  restarts, including container recreation.
+- Supplied vehicle and interest-rate data is imported once per fresh database;
+  deleted seed records are not restored on restart.
+- H2 file databases are intended for this local assessment, not concurrent
+  multi-instance production deployment.
+
+There is no reset endpoint. With Docker Compose, reset only with
+`docker compose down -v`; the next start creates fresh databases and imports
+the supplied seed data.
 
 ## Build & Test
 
@@ -233,7 +249,8 @@ sh tests/e2e/docker-smoke.sh
 ```
 
 The smoke test requires Docker, Python 3, a POSIX shell,
-and available host ports 8080 and 8081.
+and available host ports 18080, 18081, and 18082. It verifies persistence across
+container recreation and removes its isolated named volumes afterward.
 
 ## Documentation
 

@@ -16,7 +16,7 @@ class InterestRateRepositoryTests {
 
   @Test
   void selectsNearestEarlierRateWithoutHttp() {
-    InterestRateRepository repository = new InterestRateRepository();
+    InterestRateRepository repository = InterestRateRepositoryTestFactory.create();
     repository.create(new InterestRateRequest(new BigDecimal("1.25"), LocalDate.of(2014, 8, 14)));
     repository.create(new InterestRateRequest(new BigDecimal("-0.75"), LocalDate.of(2015, 2, 5)));
     repository.create(new InterestRateRequest(BigDecimal.ONE, LocalDate.of(2015, 2, 19)));
@@ -32,7 +32,7 @@ class InterestRateRepositoryTests {
 
   @Test
   void concurrentWritesKeepOneRatePerStartDate() throws Exception {
-    InterestRateRepository repository = new InterestRateRepository();
+    InterestRateRepository repository = InterestRateRepositoryTestFactory.create();
     CountDownLatch ready = new CountDownLatch(2);
     CountDownLatch start = new CountDownLatch(1);
     ExecutorService executor = Executors.newFixedThreadPool(2);

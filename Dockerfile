@@ -15,7 +15,10 @@ FROM eclipse-temurin:21.0.8_9-jre-jammy@sha256:db1689535962d757a5adabf57387584ed
 
 WORKDIR /app
 
-RUN groupadd --system application && useradd --system --gid application --home-dir /app --no-create-home application
+RUN groupadd --system application \
+    && useradd --system --gid application --home-dir /app --no-create-home application \
+    && mkdir /data \
+    && chown application:application /data
 
 USER application:application
 

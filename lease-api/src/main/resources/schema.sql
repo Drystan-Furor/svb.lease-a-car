@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS customers (
+  id UUID PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  street VARCHAR(255) NOT NULL,
+  house_number VARCHAR(50) NOT NULL,
+  zipcode VARCHAR(20) NOT NULL,
+  place VARCHAR(255) NOT NULL,
+  email VARCHAR(320) NOT NULL,
+  phone_number VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS vehicles (
+  id UUID PRIMARY KEY,
+  make VARCHAR(255) NOT NULL,
+  model VARCHAR(255) NOT NULL,
+  vehicle_version VARCHAR(255) NOT NULL,
+  number_of_doors INTEGER NOT NULL,
+  co2_emission DECIMAL(19, 4),
+  gross_price DECIMAL(19, 4) NOT NULL,
+  nett_price DECIMAL(19, 4) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS seed_state (
+  seed_name VARCHAR(64) PRIMARY KEY,
+  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);

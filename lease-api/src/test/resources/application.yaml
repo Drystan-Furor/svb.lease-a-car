@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: "jdbc:h2:mem:${random.uuid}"
+    username: sa
+    password:
+  sql:
+    init:
+      mode: always
+
+lease:
+  jwt:
+    secret: 0123456789012345678901234567890123456789012345678901234567890123
+    issuer: lease-demo
+    audience: lease-platform
