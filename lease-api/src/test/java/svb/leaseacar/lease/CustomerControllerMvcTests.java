@@ -130,6 +130,32 @@ class CustomerControllerMvcTests {
   }
 
   @Test
+  void rejectsCustomerFieldsBeyondDatabaseColumnLengths() throws Exception {
+    String token = token("BROKER");
+    List<String> oversizedCustomers =
+        List.of(
+            VALID_CUSTOMER.replace("Ada Lovelace", "x".repeat(256)),
+            VALID_CUSTOMER.replace("Analytical Engine Road", "x".repeat(256)),
+            VALID_CUSTOMER.replace("12A", "x".repeat(51)),
+            VALID_CUSTOMER.replace("1011 AB", "x".repeat(21)),
+            VALID_CUSTOMER.replace("Amsterdam", "x".repeat(256)),
+            VALID_CUSTOMER.replace("ada@example.test", "x".repeat(321)),
+            VALID_CUSTOMER.replace("+31 6 12345678", "x".repeat(51)));
+
+    for (String oversizedCustomer : oversizedCustomers) {
+      mockMvc
+          .perform(
+              post("/customers")
+                  .header("Authorization", bearer(token))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(oversizedCustomer))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+          .andExpect(jsonPath("$.detail").value("Customer input is invalid"));
+    }
+  }
+
+  @Test
   void customerManagementIsForbiddenForEmployeeAndMissingCustomerIsNotFound() throws Exception {
     String employeeToken = token("EMPLOYEE");
     String unknown = "/customers/123e4567-e89b-12d3-a456-426614174000";

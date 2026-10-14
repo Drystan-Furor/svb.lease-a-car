@@ -208,6 +208,27 @@ class InterestRateControllerMvcTests {
         .andExpect(status().isBadRequest());
   }
 
+  @Test
+  void rejectsInterestRatesBeyondDatabasePrecisionAndScale() throws Exception {
+    String token = token("EMPLOYEE");
+    List<String> invalidRates =
+        List.of(
+            "{\"interestRate\":12345678901234.000000,\"startDate\":\"2023-01-01\"}",
+            "{\"interestRate\":1.0000000,\"startDate\":\"2023-01-01\"}");
+
+    for (String invalidRate : invalidRates) {
+      mockMvc
+          .perform(
+              post("/interest-rates")
+                  .header("Authorization", bearer(token))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(invalidRate))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+          .andExpect(jsonPath("$.detail").value("Interest rate input is invalid"));
+    }
+  }
+
   private MvcResult create(String token, String request) throws Exception {
     return mockMvc
         .perform(

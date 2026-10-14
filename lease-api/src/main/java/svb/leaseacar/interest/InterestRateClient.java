@@ -20,12 +20,13 @@ public class InterestRateClient {
   private final RestClient restClient;
 
   InterestRateClient(
+      RestClient.Builder restClientBuilder,
       @Value("${lease.interest-rate-service-url:${INTEREST_RATE_SERVICE_URL:http://localhost:8081}}")
           String baseUrl) {
     SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
     requestFactory.setConnectTimeout(Duration.ofSeconds(1));
     requestFactory.setReadTimeout(Duration.ofSeconds(2));
-    restClient = RestClient.builder().baseUrl(baseUrl).requestFactory(requestFactory).build();
+    restClient = restClientBuilder.baseUrl(baseUrl).requestFactory(requestFactory).build();
   }
 
   public InterestRateResponse findEffectiveOn(LocalDate date, String bearerToken) {

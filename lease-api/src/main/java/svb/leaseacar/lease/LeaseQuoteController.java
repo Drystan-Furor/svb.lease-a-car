@@ -39,8 +39,15 @@ class LeaseQuoteController {
     @ApiResponse(responseCode = "400", description = "Invalid quote input", content = @Content),
     @ApiResponse(responseCode = "401", description = "Missing or invalid token", content = @Content),
     @ApiResponse(responseCode = "403", description = "Broker role required", content = @Content),
+    @ApiResponse(responseCode = "404", description = "Vehicle not found", content = @Content),
     @ApiResponse(
-        responseCode = "404", description = "Vehicle or interest rate not found", content = @Content),
+        responseCode = "422",
+        description = "No interest rate is effective on the requested date",
+        content = @Content),
+    @ApiResponse(
+        responseCode = "502",
+        description = "Interest-rate service rejected the request or returned an invalid response",
+        content = @Content),
     @ApiResponse(
         responseCode = "503", description = "Interest-rate service unavailable", content = @Content)
   })

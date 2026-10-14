@@ -133,6 +133,31 @@ class VehicleControllerMvcTests {
   }
 
   @Test
+  void rejectsVehicleDecimalsBeyondDatabasePrecisionAndScale() throws Exception {
+    String token = token("EMPLOYEE");
+    List<String> invalidVehicles =
+        List.of(
+            VALID_VEHICLE.replace("\"co2Emission\": null", "\"co2Emission\": 1234567890123456.0000"),
+            VALID_VEHICLE.replace("\"co2Emission\": null", "\"co2Emission\": 1.00000"),
+            VALID_VEHICLE.replace("\"grossPrice\": 52000.00", "\"grossPrice\": 1234567890123456.0000"),
+            VALID_VEHICLE.replace("\"grossPrice\": 52000.00", "\"grossPrice\": 1.00000"),
+            VALID_VEHICLE.replace("\"nettPrice\": 43000.00", "\"nettPrice\": 1234567890123456.0000"),
+            VALID_VEHICLE.replace("\"nettPrice\": 43000.00", "\"nettPrice\": 1.00000"));
+
+    for (String invalidVehicle : invalidVehicles) {
+      mockMvc
+          .perform(
+              post("/vehicles")
+                  .header("Authorization", bearer(token))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(invalidVehicle))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+          .andExpect(jsonPath("$.detail").value("Vehicle input is invalid"));
+    }
+  }
+
+  @Test
   void nullableCo2AndIdenticalVehicleVersionsRemainDistinct() throws Exception {
     String token = token("EMPLOYEE");
     String firstLocation = createVehicle(token, VALID_VEHICLE).getResponse().getHeader("Location");

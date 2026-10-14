@@ -52,7 +52,18 @@ class OpenApiDocumentationMvcTests {
                 .value("#/components/schemas/Customer"))
         .andExpect(jsonPath("$.paths['/customers/{id}'].get.responses['404']").exists())
         .andExpect(jsonPath("$.paths['/vehicles'].post.responses['403']").exists())
-        .andExpect(jsonPath("$.paths['/lease-quotes'].post.responses['503']").exists())
+        .andExpect(
+            jsonPath("$.paths['/lease-quotes'].post.responses['404'].description")
+                .value("Vehicle not found"))
+        .andExpect(
+            jsonPath("$.paths['/lease-quotes'].post.responses['422'].description")
+                .value("No interest rate is effective on the requested date"))
+        .andExpect(
+            jsonPath("$.paths['/lease-quotes'].post.responses['502'].description")
+                .value("Interest-rate service rejected the request or returned an invalid response"))
+        .andExpect(
+            jsonPath("$.paths['/lease-quotes'].post.responses['503'].description")
+                .value("Interest-rate service unavailable"))
         .andExpect(
             jsonPath("$.paths['/lease-quotes'].post.responses['200'].content['application/json'].schema.$ref")
                 .value("#/components/schemas/LeaseQuote"))

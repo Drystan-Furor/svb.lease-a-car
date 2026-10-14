@@ -37,6 +37,24 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <doclint>all,-missing</doclint>
+          <failOnError>true</failOnError>
+          <failOnWarnings>true</failOnWarnings>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-javadocs</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
