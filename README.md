@@ -160,6 +160,25 @@ Handles:
 
 Both services independently validate JWT tokens.
 
+### Interactive API documentation
+
+Each service publishes its own OpenAPI document and Swagger UI.
+
+| Service | Swagger UI | OpenAPI JSON |
+|---------|------------|--------------|
+| Lease API | http://localhost:8080/swagger-ui/index.html | http://localhost:8080/v3/api-docs |
+| Interest Rate Service | http://localhost:8081/swagger-ui/index.html | http://localhost:8081/v3/api-docs |
+
+The documentation endpoints are public. Business endpoints remain protected.
+To try a protected operation:
+
+1. Call `POST /auth/login` on the Lease API.
+2. Copy the `accessToken` value from the response.
+3. Select **Authorize** in either Swagger UI and paste the token without the
+   `Bearer ` prefix.
+
+Swagger UI adds the prefix and sends the token in the `Authorization` header.
+
 ### API Overview
 
 | Method   | Endpoint                  | Description              |

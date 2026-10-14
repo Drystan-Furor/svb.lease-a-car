@@ -1,5 +1,10 @@
 package svb.leaseacar.security;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -41,6 +46,17 @@ class LoginController {
   }
 
   @PostMapping("/login")
+  @Operation(summary = "Authenticate a demo account", security = {})
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Bearer token issued",
+        content =
+            @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = TokenResponse.class))),
+    @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content)
+  })
   TokenResponse login(@RequestBody LoginRequest request) {
     String role = authenticate(request);
     Instant issuedAt = clock.instant();

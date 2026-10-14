@@ -39,6 +39,8 @@ class SecurityConfiguration {
         .authorizeHttpRequests(
             authorization ->
                 authorization
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
+                    .permitAll()
                     .requestMatchers(HttpMethod.GET, "/interest-rates/**")
                     .hasAnyRole("BROKER", "EMPLOYEE")
                     .requestMatchers("/interest-rates/**")

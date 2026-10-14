@@ -45,6 +45,8 @@ class SecurityConfiguration {
         .authorizeHttpRequests(
             authorization ->
                 authorization
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
+                    .permitAll()
                     .requestMatchers(HttpMethod.POST, "/auth/login")
                     .permitAll()
                     .requestMatchers("/customers/**", "/lease-quotes/**")

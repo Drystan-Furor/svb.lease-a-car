@@ -54,7 +54,22 @@ Both services independently validate:
 | 401 | Missing, expired, or invalid authentication |
 | 403 | Authenticated user lacks required permissions |
 
-Only the login endpoint permits anonymous access.
+The login and API-documentation endpoints permit anonymous access. Business
+endpoints require a valid JWT.
+
+### OpenAPI and Swagger UI
+
+Each service publishes an OpenAPI document and interactive Swagger UI:
+
+| Service | Swagger UI | OpenAPI JSON |
+|---------|------------|--------------|
+| Lease API | http://localhost:8080/swagger-ui/index.html | http://localhost:8080/v3/api-docs |
+| Interest Rate Service | http://localhost:8081/swagger-ui/index.html | http://localhost:8081/v3/api-docs |
+
+Get an access token from `POST /auth/login`. In Swagger UI, select
+**Authorize** and paste only the token value. Swagger UI sends it as a bearer
+token. The OpenAPI documents describe request and response schemas, validation
+constraints, authorization, and operation-specific error statuses.
 
 ### Security Configuration
 
