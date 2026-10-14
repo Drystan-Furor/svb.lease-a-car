@@ -1,4 +1,4 @@
-package svb.leaseacar.interest.rate;
+package svb.leaseacar.interest;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
+import svb.leaseacar.interest.rate.InterestRateDateConflictException;
 
 /** Converts API failures into stable ProblemDetail responses. */
 @RestControllerAdvice
