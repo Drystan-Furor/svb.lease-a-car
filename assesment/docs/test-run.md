@@ -1,7 +1,6 @@
 # API testen op de draaiende Dockercontainers
 
 Gecontroleerd op 2026-10-13: 47 requests uit stappen 1–8 geslaagd op de README-containers.
-De optionele stop- en herstarttests zijn daarbij niet uitgevoerd.
 
 Startpunt: beide containers draaien volgens [README](../../README.md). Open een Bash-terminal
 in de projectroot. Nodig: `curl` en `jq`. Kopieer onderstaande blokken in volgorde in dezelfde

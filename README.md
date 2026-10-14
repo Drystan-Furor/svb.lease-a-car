@@ -182,9 +182,9 @@ Both services independently validate JWT tokens.
 
 Each service publishes its own OpenAPI document and Swagger UI.
 
-| Service | Swagger UI | OpenAPI JSON |
-|---------|------------|--------------|
-| Lease API | http://localhost:8080/swagger-ui/index.html | http://localhost:8080/v3/api-docs |
+| Service               | Swagger UI                                  | OpenAPI JSON                      |
+|-----------------------|---------------------------------------------|-----------------------------------|
+| Lease API             | http://localhost:8080/swagger-ui/index.html | http://localhost:8080/v3/api-docs |
 | Interest Rate Service | http://localhost:8081/swagger-ui/index.html | http://localhost:8081/v3/api-docs |
 
 The documentation endpoints are public. Business endpoints remain protected.
