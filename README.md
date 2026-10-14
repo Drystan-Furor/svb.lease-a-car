@@ -54,6 +54,16 @@ be exposed outside a trusted local environment.
 
 ### Option 2 — Run with Docker
 
+The H2 databases are embedded in the two application services. There is no
+separate database container or database start command. `docker compose up`
+starts each service and automatically creates its database schema and seed data
+when its named volume is empty.
+
+`docker build --target verify .` only builds and tests the source; it does not
+start the services or databases. Running it separately is optional because
+`docker compose up --build` builds the application images through the same
+verified Docker stage before starting them.
+
 Docker Compose requires a shared JWT secret and BCrypt password
 hashes for both demo accounts.
 
@@ -78,7 +88,8 @@ values. Each hash must be a 60-character BCrypt value beginning with `$2`.
 Do not export placeholder text such as `<broker hash>` or include a username
 prefix. When copying a hash manually, use single quotes to preserve `$` characters.
 
-Start both services, then check their status and startup logs:
+Build and start both services and their embedded databases, then check status
+and startup logs:
 
 ```bash
 docker compose up --build -d
@@ -214,9 +225,11 @@ All other endpoints belong to the Lease API.
 
 Each service uses its own H2 file database.
 
-- Local runs store files below that module's `./data/` directory.
+- No separate H2 server needs to be installed or started.
+- Local runs from the project root create `./data/lease-api.mv.db` and
+  `./data/interest-rate-service.mv.db` automatically.
 - Docker Compose stores Lease API and Interest Rate Service data in separate
-  named volumes mounted at `/data`.
+  named volumes mounted at `/data`; the files are created on first startup.
 - Created, changed, and deleted records survive application and container
   restarts, including container recreation.
 - Supplied vehicle and interest-rate data is imported once per fresh database;
@@ -236,10 +249,18 @@ Run the complete Maven verification:
 ./mvnw verify
 ```
 
-Or verify using Docker without installing Java:
+Or build and verify using Docker without installing Java. This command stops
+after verification and does not start the applications or databases:
 
 ```bash
 docker build --target verify .
+```
+
+To build, verify, and then start the complete application, use the Docker
+Compose instructions above or run:
+
+```bash
+docker compose up --build -d
 ```
 
 Run the automated assessment smoke test:
