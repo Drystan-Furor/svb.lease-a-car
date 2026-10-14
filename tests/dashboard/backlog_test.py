@@ -39,6 +39,18 @@ class BacklogContractTests(unittest.TestCase):
         self.assertEqual(10, section.count("03 · Refactor"))
         self.assertEqual(10, section.count("Gereed wanneer"))
 
+    def test_completed_technical_follow_ups_are_recorded_on_applicable_stories(self):
+        for story_id in ("S04", "S05", "S07", "S08", "S10", "B01"):
+            with self.subTest(story_id=story_id):
+                self.assertIn(
+                    f"<strong>Implementatiestatus {story_id}.</strong>", self.backlog
+                )
+
+        developer_follow_up = self.backlog.split(
+            '<section id="developer-follow-up">', 1
+        )[1].split("</section>", 1)[0]
+        self.assertNotIn('class="done-pill"', developer_follow_up)
+
 
 if __name__ == "__main__":
     unittest.main()
