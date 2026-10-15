@@ -6,10 +6,11 @@ COPY .mvn .mvn
 COPY mvnw pom.xml ./
 COPY lease-api/pom.xml lease-api/pom.xml
 COPY interest-rate-service/pom.xml interest-rate-service/pom.xml
+COPY integration-tests/pom.xml integration-tests/pom.xml
 COPY lease-api/src lease-api/src
 COPY interest-rate-service/src interest-rate-service/src
 
-RUN ./mvnw -B verify
+RUN ./mvnw -B -pl lease-api,interest-rate-service verify
 
 FROM eclipse-temurin:21.0.8_9-jre-jammy@sha256:db1689535962d757a5adabf57387584ed543d38c0b9d1fe870123ea362ad73b0 AS runtime-base
 

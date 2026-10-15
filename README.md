@@ -243,14 +243,24 @@ the supplied seed data.
 
 ## Build & Test
 
-Run the complete Maven verification:
+Run the complete Maven verification. Docker must be running because the final
+module starts both production images with Testcontainers and verifies their
+lease-quote communication flow:
 
 ```bash
 ./mvnw verify
 ```
 
+To run only the service-level tests without the container integration test:
+
+```bash
+./mvnw -pl lease-api,interest-rate-service verify
+```
+
 Or build and verify using Docker without installing Java. This command stops
-after verification and does not start the applications or databases:
+after service-level verification and does not start the applications or databases.
+It intentionally excludes the Testcontainers module because that module must run
+on the Docker host:
 
 ```bash
 docker build --target verify .

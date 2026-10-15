@@ -16,6 +16,7 @@
   <modules>
     <module>lease-api</module>
     <module>interest-rate-service</module>
+    <module>integration-tests</module>
   </modules>
   <properties>
     <java.version>21</java.version>
